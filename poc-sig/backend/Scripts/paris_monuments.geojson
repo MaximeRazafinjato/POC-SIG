@@ -1,0 +1,101 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tour Eiffel",
+        "type": "Monument",
+        "height": 324,
+        "built": 1889,
+        "visitors_per_year": 7000000,
+        "architect": "Gustave Eiffel",
+        "district": "7ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.2945, 48.8584]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Arc de Triomphe",
+        "type": "Monument",
+        "height": 50,
+        "built": 1836,
+        "visitors_per_year": 1500000,
+        "architect": "Jean-François Chalgrin",
+        "district": "8ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.2950, 48.8738]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Notre-Dame de Paris",
+        "type": "Cathédrale",
+        "height": 69,
+        "built": 1345,
+        "visitors_per_year": 13000000,
+        "architect": "Maurice de Sully",
+        "district": "4ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3499, 48.8530]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sacré-Cœur",
+        "type": "Basilique",
+        "height": 83,
+        "built": 1914,
+        "visitors_per_year": 10500000,
+        "architect": "Paul Abadie",
+        "district": "18ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3431, 48.8867]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Panthéon",
+        "type": "Monument",
+        "height": 83,
+        "built": 1790,
+        "visitors_per_year": 700000,
+        "architect": "Jacques-Germain Soufflot",
+        "district": "5ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3466, 48.8462]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Opéra Garnier",
+        "type": "Opéra",
+        "height": 56,
+        "built": 1875,
+        "visitors_per_year": 800000,
+        "architect": "Charles Garnier",
+        "district": "9ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3316, 48.8719]
+      }
+    }
+  ]
+}

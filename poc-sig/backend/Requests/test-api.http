@@ -1,0 +1,68 @@
+@baseUrl = http://localhost:5050/api
+
+### Get all layers
+GET {{baseUrl}}/layers
+
+### Create a new layer
+POST {{baseUrl}}/layers
+Content-Type: application/json
+
+{
+  "name": "Test Layer",
+  "srid": 4326,
+  "geometryType": "Polygon",
+  "metadataJson": "{\"description\": \"Test layer for API testing\"}"
+}
+
+### Import GeoJSON sample file to default layer (ID 1)
+POST {{baseUrl}}/layers/import?layerId=1
+
+### Import GeoJSON to new layer with custom name
+POST {{baseUrl}}/layers/import?layerName=Monuments%20Paris
+
+### Get features from layer 1 with no filters
+GET {{baseUrl}}/features?layerId=1&page=1&pageSize=10
+
+### Get features with bounding box filter (Paris center)
+GET {{baseUrl}}/features?layerId=1&bbox=2.29,48.85,2.36,48.87&page=1&pageSize=10
+
+### Get features with WITHIN operation for bbox
+GET {{baseUrl}}/features?layerId=1&bbox=2.29,48.85,2.36,48.87&geometryOp=within
+
+### Get features with INTERSECTS operation for bbox
+GET {{baseUrl}}/features?layerId=1&bbox=2.29,48.85,2.36,48.87&geometryOp=intersects
+
+### Get features with buffer (500 meters)
+GET {{baseUrl}}/features?layerId=1&bbox=2.35,48.86,2.351,48.861&bufferMeters=500
+
+### Get features with date filter
+GET {{baseUrl}}/features?layerId=1&dateFrom=2024-01-01T00:00:00Z&dateTo=2024-12-31T23:59:59Z
+
+### Get statistics for layer 1
+GET {{baseUrl}}/features/stats?layerId=1
+
+### Get statistics with bbox filter
+GET {{baseUrl}}/features/stats?layerId=1&bbox=2.29,48.85,2.36,48.87
+
+### Create a new feature (polygon)
+POST {{baseUrl}}/features
+Content-Type: application/json
+
+{
+  "layerId": 1,
+  "wkt": "POLYGON((2.340 48.860, 2.341 48.860, 2.341 48.861, 2.340 48.861, 2.340 48.860))",
+  "propertiesJson": "{\"name\": \"Test Polygon\", \"type\": \"test\"}",
+  "validFromUtc": "2024-01-01T00:00:00Z"
+}
+
+### Export layer 1 as GeoJSON
+GET {{baseUrl}}/export/geojson?layerId=1
+
+### Export layer 1 as GeoJSON with bbox filter
+GET {{baseUrl}}/export/geojson?layerId=1&bbox=2.29,48.85,2.36,48.87
+
+### Export layer 1 as CSV
+GET {{baseUrl}}/export/csv?layerId=1
+
+### Export layer 1 as CSV with filters
+GET {{baseUrl}}/export/csv?layerId=1&bbox=2.29,48.85,2.36,48.87&dateFrom=2024-01-01T00:00:00Z

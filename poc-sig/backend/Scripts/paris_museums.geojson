@@ -1,0 +1,133 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Musée du Louvre",
+        "type": "Musée",
+        "category": "Art",
+        "visitors_per_year": 9600000,
+        "opened": 1793,
+        "famous_works": ["Mona Lisa", "Venus de Milo", "Victoire de Samothrace"],
+        "district": "1er arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3376, 48.8606]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Musée d'Orsay",
+        "type": "Musée",
+        "category": "Art impressionniste",
+        "visitors_per_year": 3200000,
+        "opened": 1986,
+        "famous_works": ["L'Origine du monde", "Le Bal du moulin de la Galette"],
+        "district": "7ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3265, 48.8600]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Centre Pompidou",
+        "type": "Musée",
+        "category": "Art moderne",
+        "visitors_per_year": 3500000,
+        "opened": 1977,
+        "architect": "Renzo Piano et Richard Rogers",
+        "district": "4ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3522, 48.8606]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Musée Rodin",
+        "type": "Musée",
+        "category": "Sculpture",
+        "visitors_per_year": 700000,
+        "opened": 1919,
+        "famous_works": ["Le Penseur", "Le Baiser", "La Porte de l'Enfer"],
+        "district": "7ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3155, 48.8553]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Musée Picasso",
+        "type": "Musée",
+        "category": "Art moderne",
+        "visitors_per_year": 670000,
+        "opened": 1985,
+        "collection": "5000 œuvres de Picasso",
+        "district": "3ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3625, 48.8598]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Musée de l'Orangerie",
+        "type": "Musée",
+        "category": "Impressionnisme",
+        "visitors_per_year": 1000000,
+        "opened": 1927,
+        "famous_works": ["Les Nymphéas de Monet"],
+        "district": "1er arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3226, 48.8638]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Musée Carnavalet",
+        "type": "Musée",
+        "category": "Histoire de Paris",
+        "visitors_per_year": 450000,
+        "opened": 1880,
+        "collection": "Histoire de Paris de la préhistoire à nos jours",
+        "district": "3ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3635, 48.8569]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Musée de Cluny",
+        "type": "Musée",
+        "category": "Moyen Âge",
+        "visitors_per_year": 320000,
+        "opened": 1843,
+        "famous_works": ["La Dame à la licorne"],
+        "district": "5ème arrondissement"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.3433, 48.8505]
+      }
+    }
+  ]
+}
