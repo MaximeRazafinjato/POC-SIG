@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, GeoJSON, Rectangle, useMapEvents } from 'react-leaflet';
-import { LatLngBounds, LatLng } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import '../styles/modern.css';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  GeoJSON,
+  Rectangle,
+  useMapEvents,
+} from "react-leaflet";
+import { LatLngBounds, LatLng } from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "../styles/modern.css";
 import {
   Map,
   Layers,
@@ -23,18 +29,24 @@ import {
   Database,
   MapPin,
   Globe,
-  MousePointer
-} from 'lucide-react';
-import { layersApi, featuresApi, exportApi, downloadFile, api } from '../api/client';
-import { SelectionPanel } from '../components/SelectionPanel';
-import type { Layer, Feature, FilterParams, Stats } from '../types/api';
+  MousePointer,
+} from "lucide-react";
+import {
+  layersApi,
+  featuresApi,
+  exportApi,
+  downloadFile,
+  api,
+} from "../api/client";
+import { SelectionPanel } from "../components/SelectionPanel";
+import type { Layer, Feature, FilterParams, Stats } from "../types/api";
 
 export const ModernMapView: React.FC = () => {
   const [layers, setLayers] = useState<Layer[]>([]);
   const [selectedLayer, setSelectedLayer] = useState<Layer | null>(null);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [filters, setFilters] = useState<FilterParams>({
-    operation: 'intersects',
+    operation: "intersects",
     pageSize: 500,
   });
   const [stats, setStats] = useState<Stats | null>(null);
@@ -50,9 +62,9 @@ export const ModernMapView: React.FC = () => {
     loadLayers();
     // Apply dark mode to body
     if (darkMode) {
-      document.body.classList.add('dark-mode');
+      document.body.classList.add("dark-mode");
     } else {
-      document.body.classList.remove('dark-mode');
+      document.body.classList.remove("dark-mode");
     }
   }, [darkMode]);
 
@@ -75,37 +87,46 @@ export const ModernMapView: React.FC = () => {
         await loadAllFeatures(layersData);
       }
     } catch (error) {
-      console.error('Error loading layers:', error);
+      console.error("Error loading layers:", error);
     }
   };
 
   const loadAllFeatures = async (layersData: Layer[]) => {
     try {
       setLoading(true);
-      console.log('Loading all features from all layers...');
+      console.log("Loading all features from all layers...");
       const allFeatures: Feature[] = [];
 
       for (const layer of layersData) {
         try {
-          const response = await featuresApi.getFeatures(layer.id, { pageSize: 1000 });
+          const response = await featuresApi.getFeatures(layer.id, {
+            pageSize: 1000,
+          });
           const layerFeatures = response.features || response.items || [];
-          console.log(`Loaded ${layerFeatures.length} features from layer "${layer.name}"`);
+          console.log(
+            `Loaded ${layerFeatures.length} features from layer "${layer.name}"`
+          );
           allFeatures.push(...layerFeatures);
         } catch (error) {
-          console.error(`Error loading features for layer ${layer.name}:`, error);
+          console.error(
+            `Error loading features for layer ${layer.name}:`,
+            error
+          );
         }
       }
 
       // Parse properties for GeoJSON format
       const parsedAllFeatures = allFeatures.map((feature: any) => ({
         ...feature,
-        properties: feature.properties || (feature.propertiesJson ? JSON.parse(feature.propertiesJson) : {})
+        properties:
+          feature.properties ||
+          (feature.propertiesJson ? JSON.parse(feature.propertiesJson) : {}),
       }));
 
       console.log(`Total features loaded: ${parsedAllFeatures.length}`);
       setFeatures(parsedAllFeatures);
     } catch (error) {
-      console.error('Error loading all features:', error);
+      console.error("Error loading all features:", error);
     } finally {
       setLoading(false);
     }
@@ -114,24 +135,28 @@ export const ModernMapView: React.FC = () => {
   const loadFeatures = async () => {
     if (!selectedLayer) return;
 
-    console.log('Loading features with filters:', filters);
+    console.log("Loading features with filters:", filters);
     setLoading(true);
     try {
       const response = await featuresApi.getFeatures(selectedLayer.id, filters);
-      console.log('API response:', response);
+      console.log("API response:", response);
 
       if (response.features) {
-        console.log(`Loaded ${response.features.length} features (from response.features)`);
+        console.log(
+          `Loaded ${response.features.length} features (from response.features)`
+        );
         setFeatures(response.features);
       } else if (response.items) {
-        console.log(`Loaded ${response.items.length} features (from response.items)`);
+        console.log(
+          `Loaded ${response.items.length} features (from response.items)`
+        );
         setFeatures(response.items);
       } else {
-        console.log('No features found in response');
+        console.log("No features found in response");
         setFeatures([]);
       }
     } catch (error) {
-      console.error('Error loading features:', error);
+      console.error("Error loading features:", error);
     } finally {
       setLoading(false);
     }
@@ -147,31 +172,36 @@ export const ModernMapView: React.FC = () => {
       const mappedStats = {
         totalFeatures: features.length,
         filteredFeatures: statsData.count || features.length,
-        executionTimeMs: statsData.queryTimeMs || 0
+        executionTimeMs: statsData.queryTimeMs || 0,
       };
 
       setStats(mappedStats);
     } catch (error) {
-      console.error('Error loading stats:', error);
+      console.error("Error loading stats:", error);
     }
   };
 
   const handleBboxChange = (bounds: LatLngBounds) => {
     setBbox(bounds);
     const bboxString = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
-    console.log('Setting bbox filter:', bboxString, 'Selection mode:', isSelectionMode);
-    setFilters(prev => ({ ...prev, bbox: bboxString }));
+    console.log(
+      "Setting bbox filter:",
+      bboxString,
+      "Selection mode:",
+      isSelectionMode
+    );
+    setFilters((prev) => ({ ...prev, bbox: bboxString }));
 
     // If in selection mode, track selected features
     if (isSelectionMode) {
-      console.log('Triggering feature selection for bbox:', bboxString);
+      console.log("Triggering feature selection for bbox:", bboxString);
       loadSelectedFeatures(bounds);
     }
   };
 
   const clearBbox = () => {
     setBbox(null);
-    setFilters(prev => ({ ...prev, bbox: undefined }));
+    setFilters((prev) => ({ ...prev, bbox: undefined }));
     if (isSelectionMode) {
       setSelectedFeatures([]);
     }
@@ -179,7 +209,7 @@ export const ModernMapView: React.FC = () => {
 
   const loadSelectedFeatures = async (bounds: LatLngBounds) => {
     if (!selectedLayer) {
-      console.log('No layer selected for feature selection');
+      console.log("No layer selected for feature selection");
       return;
     }
 
@@ -188,12 +218,14 @@ export const ModernMapView: React.FC = () => {
 
       // Si on est sur la couche Default (ID: 1), chercher dans toutes les couches
       if (selectedLayer.id === 1) {
-        console.log(`Loading selected features with bbox: ${bboxString} from all layers (Default mode)`);
+        console.log(
+          `Loading selected features with bbox: ${bboxString} from all layers (Default mode)`
+        );
 
         const allSelectedFeatures: Feature[] = [];
 
         // Chercher dans toutes les couches sauf Default
-        const layersToSearch = layers.filter(layer => layer.id !== 1);
+        const layersToSearch = layers.filter((layer) => layer.id !== 1);
         for (const layer of layersToSearch) {
           try {
             console.log(`Searching in layer "${layer.name}" (ID: ${layer.id})`);
@@ -201,72 +233,89 @@ export const ModernMapView: React.FC = () => {
               bbox: bboxString,
               operation: filters.operation,
               bufferMeters: filters.bufferMeters,
-              pageSize: 1000
+              pageSize: 1000,
             });
 
             const featuresData = response.features || response.items || [];
-            console.log(`Found ${featuresData.length} features in layer "${layer.name}"`);
+            console.log(
+              `Found ${featuresData.length} features in layer "${layer.name}"`
+            );
             allSelectedFeatures.push(...featuresData);
           } catch (error) {
-            console.error(`Error loading features from layer ${layer.name}:`, error);
+            console.error(
+              `Error loading features from layer ${layer.name}:`,
+              error
+            );
           }
         }
 
         // Parse properties for better display (handle both GeoJSON and DB format)
         const parsedFeatures = allSelectedFeatures.map((feature: any) => ({
           ...feature,
-          properties: feature.properties || (feature.propertiesJson ? JSON.parse(feature.propertiesJson) : {})
+          properties:
+            feature.properties ||
+            (feature.propertiesJson ? JSON.parse(feature.propertiesJson) : {}),
         }));
 
-        console.log(`Total selected features from all layers: ${parsedFeatures.length}`);
+        console.log(
+          `Total selected features from all layers: ${parsedFeatures.length}`
+        );
         setSelectedFeatures(parsedFeatures);
       } else {
         // Mode couche spécifique (comportement original)
-        console.log(`Loading selected features with bbox: ${bboxString} from selected layer "${selectedLayer.name}" (ID: ${selectedLayer.id})`);
+        console.log(
+          `Loading selected features with bbox: ${bboxString} from selected layer "${selectedLayer.name}" (ID: ${selectedLayer.id})`
+        );
 
         const response = await featuresApi.getFeatures(selectedLayer.id, {
           bbox: bboxString,
           operation: filters.operation,
           bufferMeters: filters.bufferMeters,
-          pageSize: 1000
+          pageSize: 1000,
         });
 
         const featuresData = response.features || response.items || [];
-        console.log(`Found ${featuresData.length} features in selected layer "${selectedLayer.name}"`);
+        console.log(
+          `Found ${featuresData.length} features in selected layer "${selectedLayer.name}"`
+        );
 
         // Parse properties for better display (handle both GeoJSON and DB format)
         const parsedFeatures = featuresData.map((feature: any) => ({
           ...feature,
-          properties: feature.properties || (feature.propertiesJson ? JSON.parse(feature.propertiesJson) : {})
+          properties:
+            feature.properties ||
+            (feature.propertiesJson ? JSON.parse(feature.propertiesJson) : {}),
         }));
 
-        console.log(`Total selected features from layer "${selectedLayer.name}": ${parsedFeatures.length}`);
+        console.log(
+          `Total selected features from layer "${selectedLayer.name}": ${parsedFeatures.length}`
+        );
         setSelectedFeatures(parsedFeatures);
       }
     } catch (error) {
-      console.error('Error loading selected features:', error);
+      console.error("Error loading selected features:", error);
     }
   };
 
   const handleToggleSelectionMode = () => {
     const newMode = !isSelectionMode;
-    console.log('Toggling selection mode:', isSelectionMode, '->', newMode);
+    console.log("Toggling selection mode:", isSelectionMode, "->", newMode);
     setIsSelectionMode(newMode);
     setDrawing(newMode); // Enable drawing when selection mode is on
 
     if (!newMode) {
       // Clear selection when turning off selection mode
-      console.log('Clearing selection data');
+      console.log("Clearing selection data");
       setSelectedFeatures([]);
       setBbox(null);
-      setFilters(prev => ({ ...prev, bbox: undefined }));
+      setFilters((prev) => ({ ...prev, bbox: undefined }));
     }
   };
 
   const handleClearSelection = () => {
     setSelectedFeatures([]);
     setBbox(null);
-    setFilters(prev => ({ ...prev, bbox: undefined }));
+    setFilters((prev) => ({ ...prev, bbox: undefined }));
   };
 
   const handleImport = async (fileName: string, layerName?: string) => {
@@ -277,7 +326,11 @@ export const ModernMapView: React.FC = () => {
       // Si pas de couche, on la crée ou on utilise l'import avec layerName
       if (!targetLayerId) {
         // Import avec création automatique de la couche
-        const response = await api.post(`/layers/import?layerName=${encodeURIComponent(layerName || fileName.replace('.geojson', ''))}&fileName=${encodeURIComponent(fileName)}`);
+        const response = await api.post(
+          `/layers/import?layerName=${encodeURIComponent(
+            layerName || fileName.replace(".geojson", "")
+          )}&fileName=${encodeURIComponent(fileName)}`
+        );
 
         // Recharger les couches après import
         await loadLayers();
@@ -290,8 +343,8 @@ export const ModernMapView: React.FC = () => {
         alert(`Import de ${fileName} réussi !`);
       }
     } catch (error) {
-      console.error('Error importing GeoJSON:', error);
-      alert('Erreur lors de l\'import');
+      console.error("Error importing GeoJSON:", error);
+      alert("Erreur lors de l'import");
     } finally {
       setLoading(false);
     }
@@ -300,7 +353,7 @@ export const ModernMapView: React.FC = () => {
   const handleLoadDemoData = async () => {
     setLoading(true);
     try {
-      const response = await api.post('/admin/load-demo-data');
+      const response = await api.post("/admin/load-demo-data");
       const data = response.data;
 
       if (data.success) {
@@ -319,13 +372,15 @@ export const ModernMapView: React.FC = () => {
           return sum;
         }, 0);
 
-        alert(`Données de démonstration chargées avec succès !\n${successCount} couches créées\n${totalFeatures} éléments importés au total`);
+        alert(
+          `Données de démonstration chargées avec succès !\n${successCount} couches créées\n${totalFeatures} éléments importés au total`
+        );
       } else {
-        alert('Erreur lors du chargement des données de démonstration');
+        alert("Erreur lors du chargement des données de démonstration");
       }
     } catch (error) {
-      console.error('Error loading demo data:', error);
-      alert('Erreur lors du chargement des données de démonstration');
+      console.error("Error loading demo data:", error);
+      alert("Erreur lors du chargement des données de démonstration");
     } finally {
       setLoading(false);
     }
@@ -338,18 +393,22 @@ export const ModernMapView: React.FC = () => {
       if (selectedLayer.id === 1) {
         // Pour la couche "Default", utiliser l'API features pour récupérer toutes les données
         const allFeatures: any[] = [];
-        const layersToExport = layers.filter(layer => layer.id !== 1);
+        const layersToExport = layers.filter((layer) => layer.id !== 1);
 
         for (const layer of layersToExport) {
           try {
-            console.log(`Exporting features from layer "${layer.name}" (ID: ${layer.id})`);
+            console.log(
+              `Exporting features from layer "${layer.name}" (ID: ${layer.id})`
+            );
             const response = await featuresApi.getFeatures(layer.id, {
               ...filters,
-              pageSize: 1000
+              pageSize: 1000,
             });
 
             const layerFeatures = response.features || response.items || [];
-            console.log(`Found ${layerFeatures.length} features in layer "${layer.name}"`);
+            console.log(
+              `Found ${layerFeatures.length} features in layer "${layer.name}"`
+            );
 
             // Convertir en format GeoJSON
             layerFeatures.forEach((feature: any) => {
@@ -362,8 +421,8 @@ export const ModernMapView: React.FC = () => {
                   layerId: feature.layerId,
                   layerName: layer.name,
                   validFromUtc: feature.validFromUtc,
-                  validToUtc: feature.validToUtc
-                }
+                  validToUtc: feature.validToUtc,
+                },
               };
               allFeatures.push(geoJsonFeature);
             });
@@ -375,19 +434,24 @@ export const ModernMapView: React.FC = () => {
         // Créer un GeoJSON combiné
         const combinedGeoJson = {
           type: "FeatureCollection",
-          features: allFeatures
+          features: allFeatures,
         };
 
         console.log(`Exporting ${allFeatures.length} total features`);
-        const blob = new Blob([JSON.stringify(combinedGeoJson, null, 2)], { type: 'application/json' });
-        downloadFile(blob, 'toutes-les-couches.geojson');
+        const blob = new Blob([JSON.stringify(combinedGeoJson, null, 2)], {
+          type: "application/json",
+        });
+        downloadFile(blob, "toutes-les-couches.geojson");
       } else {
         // Export normal pour une couche spécifique
-        const response = await exportApi.exportGeoJson(selectedLayer.id, filters);
+        const response = await exportApi.exportGeoJson(
+          selectedLayer.id,
+          filters
+        );
         downloadFile(response.blob, response.filename);
       }
     } catch (error) {
-      console.error('Error exporting GeoJSON:', error);
+      console.error("Error exporting GeoJSON:", error);
     }
   };
 
@@ -398,18 +462,22 @@ export const ModernMapView: React.FC = () => {
       if (selectedLayer.id === 1) {
         // Pour la couche "Default", utiliser l'API features pour récupérer toutes les données
         const allFeatures: any[] = [];
-        const layersToExport = layers.filter(layer => layer.id !== 1);
+        const layersToExport = layers.filter((layer) => layer.id !== 1);
 
         for (const layer of layersToExport) {
           try {
-            console.log(`Exporting CSV from layer "${layer.name}" (ID: ${layer.id})`);
+            console.log(
+              `Exporting CSV from layer "${layer.name}" (ID: ${layer.id})`
+            );
             const response = await featuresApi.getFeatures(layer.id, {
               ...filters,
-              pageSize: 1000
+              pageSize: 1000,
             });
 
             const layerFeatures = response.features || response.items || [];
-            console.log(`Found ${layerFeatures.length} features for CSV in layer "${layer.name}"`);
+            console.log(
+              `Found ${layerFeatures.length} features for CSV in layer "${layer.name}"`
+            );
 
             // Ajouter les features avec le nom de la couche
             layerFeatures.forEach((feature: any) => {
@@ -419,38 +487,43 @@ export const ModernMapView: React.FC = () => {
                 layerId: feature.layerId,
                 validFromUtc: feature.validFromUtc,
                 validToUtc: feature.validToUtc,
-                ...feature.properties
+                ...feature.properties,
               });
             });
           } catch (error) {
-            console.error(`Error exporting CSV from layer ${layer.name}:`, error);
+            console.error(
+              `Error exporting CSV from layer ${layer.name}:`,
+              error
+            );
           }
         }
 
         if (allFeatures.length > 0) {
           // Créer les en-têtes CSV
           const allKeys = new Set<string>();
-          allFeatures.forEach(feature => {
-            Object.keys(feature).forEach(key => allKeys.add(key));
+          allFeatures.forEach((feature) => {
+            Object.keys(feature).forEach((key) => allKeys.add(key));
           });
           const headers = Array.from(allKeys);
 
           // Créer les lignes CSV
-          const csvLines = [headers.join(',')];
-          allFeatures.forEach(feature => {
-            const row = headers.map(header => {
+          const csvLines = [headers.join(",")];
+          allFeatures.forEach((feature) => {
+            const row = headers.map((header) => {
               const value = feature[header];
-              return value !== null && value !== undefined ? `"${String(value).replace(/"/g, '""')}"` : '';
+              return value !== null && value !== undefined
+                ? `"${String(value).replace(/"/g, '""')}"`
+                : "";
             });
-            csvLines.push(row.join(','));
+            csvLines.push(row.join(","));
           });
 
-          const combinedCsv = csvLines.join('\n');
+          const combinedCsv = csvLines.join("\n");
           console.log(`Exporting ${allFeatures.length} total features to CSV`);
-          const blob = new Blob([combinedCsv], { type: 'text/csv' });
-          downloadFile(blob, 'toutes-les-couches.csv');
+          const blob = new Blob([combinedCsv], { type: "text/csv" });
+          downloadFile(blob, "toutes-les-couches.csv");
         } else {
-          console.log('No features to export to CSV');
+          console.log("No features to export to CSV");
         }
       } else {
         // Export normal pour une couche spécifique
@@ -458,13 +531,13 @@ export const ModernMapView: React.FC = () => {
         downloadFile(response.blob, response.filename);
       }
     } catch (error) {
-      console.error('Error exporting CSV:', error);
+      console.error("Error exporting CSV:", error);
     }
   };
 
   const handleExportSelectedGeoJson = () => {
     if (selectedFeatures.length === 0) {
-      alert('Aucun élément sélectionné à exporter');
+      alert("Aucun élément sélectionné à exporter");
       return;
     }
 
@@ -478,27 +551,36 @@ export const ModernMapView: React.FC = () => {
           ...feature.properties,
           layerId: feature.layerId || feature.properties?.layerId,
           validFromUtc: feature.validFromUtc,
-          validToUtc: feature.validToUtc
-        }
+          validToUtc: feature.validToUtc,
+        },
       }));
 
       const geoJson = {
         type: "FeatureCollection",
-        features: geoJsonFeatures
+        features: geoJsonFeatures,
       };
 
-      console.log(`Exporting ${selectedFeatures.length} selected features to GeoJSON`);
-      const blob = new Blob([JSON.stringify(geoJson, null, 2)], { type: 'application/json' });
-      downloadFile(blob, `elements-selectionnes-${new Date().toISOString().split('T')[0]}.geojson`);
+      console.log(
+        `Exporting ${selectedFeatures.length} selected features to GeoJSON`
+      );
+      const blob = new Blob([JSON.stringify(geoJson, null, 2)], {
+        type: "application/json",
+      });
+      downloadFile(
+        blob,
+        `elements-selectionnes-${
+          new Date().toISOString().split("T")[0]
+        }.geojson`
+      );
     } catch (error) {
-      console.error('Error exporting selected features to GeoJSON:', error);
-      alert('Erreur lors de l\'export GeoJSON');
+      console.error("Error exporting selected features to GeoJSON:", error);
+      alert("Erreur lors de l'export GeoJSON");
     }
   };
 
   const handleExportSelectedCsv = () => {
     if (selectedFeatures.length === 0) {
-      alert('Aucun élément sélectionné à exporter');
+      alert("Aucun élément sélectionné à exporter");
       return;
     }
 
@@ -509,33 +591,40 @@ export const ModernMapView: React.FC = () => {
         layerId: feature.layerId || feature.properties?.layerId,
         validFromUtc: feature.validFromUtc,
         validToUtc: feature.validToUtc,
-        ...feature.properties
+        ...feature.properties,
       }));
 
       // Créer les en-têtes CSV
       const allKeys = new Set<string>();
-      csvData.forEach(item => {
-        Object.keys(item).forEach(key => allKeys.add(key));
+      csvData.forEach((item) => {
+        Object.keys(item).forEach((key) => allKeys.add(key));
       });
       const headers = Array.from(allKeys);
 
       // Créer les lignes CSV
-      const csvLines = [headers.join(',')];
-      csvData.forEach(item => {
-        const row = headers.map(header => {
+      const csvLines = [headers.join(",")];
+      csvData.forEach((item) => {
+        const row = headers.map((header) => {
           const value = item[header];
-          return value !== null && value !== undefined ? `"${String(value).replace(/"/g, '""')}"` : '';
+          return value !== null && value !== undefined
+            ? `"${String(value).replace(/"/g, '""')}"`
+            : "";
         });
-        csvLines.push(row.join(','));
+        csvLines.push(row.join(","));
       });
 
-      const csvContent = csvLines.join('\n');
-      console.log(`Exporting ${selectedFeatures.length} selected features to CSV`);
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      downloadFile(blob, `elements-selectionnes-${new Date().toISOString().split('T')[0]}.csv`);
+      const csvContent = csvLines.join("\n");
+      console.log(
+        `Exporting ${selectedFeatures.length} selected features to CSV`
+      );
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      downloadFile(
+        blob,
+        `elements-selectionnes-${new Date().toISOString().split("T")[0]}.csv`
+      );
     } catch (error) {
-      console.error('Error exporting selected features to CSV:', error);
-      alert('Erreur lors de l\'export CSV');
+      console.error("Error exporting selected features to CSV:", error);
+      alert("Erreur lors de l'export CSV");
     }
   };
 
@@ -563,12 +652,12 @@ export const ModernMapView: React.FC = () => {
             // Réactiver le drag de la carte
             map.dragging.enable();
 
-            map.off('mousemove', handleMouseMove);
-            map.off('mouseup', handleMouseUp);
+            map.off("mousemove", handleMouseMove);
+            map.off("mouseup", handleMouseUp);
           };
 
-          map.on('mousemove', handleMouseMove);
-          map.on('mouseup', handleMouseUp);
+          map.on("mousemove", handleMouseMove);
+          map.on("mouseup", handleMouseUp);
         }
       },
     });
@@ -584,32 +673,32 @@ export const ModernMapView: React.FC = () => {
   };
 
   const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('fr-FR');
+    return new Date(dateString).toLocaleDateString("fr-FR");
   };
 
   const getFeatureColor = (feature: Feature): string => {
-    const properties = JSON.parse(feature.propertiesJson || '{}');
-    return properties.color || '#667eea';
+    const properties = JSON.parse(feature.propertiesJson || "{}");
+    return properties.color || "#667eea";
   };
 
   return (
-    <div style={{ height: '100vh', display: 'flex', position: 'relative' }}>
+    <div style={{ height: "100vh", display: "flex", position: "relative" }}>
       {/* Theme Toggle */}
       <div className="theme-toggle">
         <div
-          className={`toggle-switch ${darkMode ? 'active' : ''}`}
+          className={`toggle-switch ${darkMode ? "active" : ""}`}
           onClick={() => setDarkMode(!darkMode)}
-          title={darkMode ? 'Mode clair' : 'Mode sombre'}
+          title={darkMode ? "Mode clair" : "Mode sombre"}
         >
           {darkMode ? <Moon size={16} /> : <Sun size={16} />}
         </div>
       </div>
 
       {/* Sidebar */}
-      <div className="sidebar" style={{ width: '380px', padding: '1.5rem' }}>
+      <div className="sidebar" style={{ width: "380px", padding: "1.5rem" }}>
         {/* Header */}
         <div className="header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Globe size={32} />
             <h1>POC SIG</h1>
           </div>
@@ -643,44 +732,50 @@ export const ModernMapView: React.FC = () => {
           <div className="form-group">
             <select
               className="form-control"
-              value={selectedLayer?.id || ''}
+              value={selectedLayer?.id || ""}
               onChange={async (e) => {
-                const layer = layers.find(l => l.id === parseInt(e.target.value));
+                const layer = layers.find(
+                  (l) => l.id === parseInt(e.target.value)
+                );
                 setSelectedLayer(layer || null);
 
                 // Si on sélectionne la couche Default (ID: 1), recharger toutes les features
                 if (layer && layer.id === 1) {
-                  console.log('Switching to Default layer, loading all features');
+                  console.log(
+                    "Switching to Default layer, loading all features"
+                  );
                   await loadAllFeatures(layers);
                 }
               }}
             >
               {layers.length === 0 && <option>Aucune couche disponible</option>}
-              {layers.map(layer => (
-                <option key={layer.id} value={layer.id}>{layer.name}</option>
+              {layers.map((layer) => (
+                <option key={layer.id} value={layer.id}>
+                  {layer.name}
+                </option>
               ))}
             </select>
           </div>
           <button
             className="btn btn-primary"
             onClick={async () => {
-              const name = prompt('Nom de la nouvelle couche :');
+              const name = prompt("Nom de la nouvelle couche :");
               if (name) {
                 try {
-                  const response = await api.post('/layers', {
+                  const response = await api.post("/layers", {
                     name,
                     srid: 4326,
-                    geometryType: 'Geometry',
-                    metadataJson: '{}'
+                    geometryType: "Geometry",
+                    metadataJson: "{}",
                   });
                   await loadLayers();
                   alert(`Couche "${name}" créée avec succès !`);
                 } catch (error) {
-                  alert('Erreur lors de la création de la couche');
+                  alert("Erreur lors de la création de la couche");
                 }
               }
             }}
-            style={{ width: '100%', marginTop: '0.75rem' }}
+            style={{ width: "100%", marginTop: "0.75rem" }}
           >
             <Plus size={16} />
             Créer une nouvelle couche
@@ -690,10 +785,10 @@ export const ModernMapView: React.FC = () => {
             className="btn btn-success"
             onClick={handleLoadDemoData}
             disabled={loading}
-            style={{ width: '100%', marginTop: '0.5rem' }}
+            style={{ width: "100%", marginTop: "0.5rem" }}
           >
             <Database size={16} />
-            {loading ? 'Chargement...' : 'Charger les données de démo'}
+            {loading ? "Chargement..." : "Charger les données de démo"}
           </button>
         </div>
 
@@ -701,13 +796,13 @@ export const ModernMapView: React.FC = () => {
         <div className="card fade-in">
           <div
             className="card-title"
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
             onClick={() => setShowFilters(!showFilters)}
           >
             <Filter size={18} />
             Filtres spatiaux et temporels
-            <span style={{ marginLeft: 'auto' }}>
-              {showFilters ? '−' : '+'}
+            <span style={{ marginLeft: "auto" }}>
+              {showFilters ? "−" : "+"}
             </span>
           </div>
 
@@ -717,8 +812,13 @@ export const ModernMapView: React.FC = () => {
                 <label className="form-label">Opération spatiale</label>
                 <select
                   className="form-control"
-                  value={filters.operation || 'intersects'}
-                  onChange={(e) => setFilters(prev => ({ ...prev, operation: e.target.value as 'intersects' | 'within' }))}
+                  value={filters.operation || "intersects"}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      operation: e.target.value as "intersects" | "within",
+                    }))
+                  }
                 >
                   <option value="intersects">Croise</option>
                   <option value="within">Contenu dans</option>
@@ -730,17 +830,21 @@ export const ModernMapView: React.FC = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={filters.bufferMeters || ''}
-                  onChange={(e) => setFilters(prev => ({ ...prev, bufferMeters: e.target.value ? parseInt(e.target.value) : undefined }))}
+                  value={filters.bufferMeters || ""}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      bufferMeters: e.target.value
+                        ? parseInt(e.target.value)
+                        : undefined,
+                    }))
+                  }
                   placeholder="Ex: 100"
                 />
               </div>
-
-
             </>
           )}
         </div>
-
 
         {/* Actions */}
         <div className="card fade-in">
@@ -748,7 +852,13 @@ export const ModernMapView: React.FC = () => {
             <Settings size={18} />
             Export des données
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "0.75rem",
+            }}
+          >
             <button
               className="btn btn-dark"
               onClick={handleExportGeoJson}
@@ -775,34 +885,48 @@ export const ModernMapView: React.FC = () => {
         <div className="card fade-in">
           <div className="card-title">
             <MousePointer size={18} />
-            Export sélection
+            Export sélection ({selectedFeatures.length})
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "0.75rem",
+            }}
+          >
             <button
               className="btn btn-success"
               onClick={handleExportSelectedGeoJson}
               disabled={selectedFeatures.length === 0}
-              title={selectedFeatures.length === 0 ? "Aucun élément sélectionné" : `Exporter ${selectedFeatures.length} éléments sélectionnés en GeoJSON`}
+              title={
+                selectedFeatures.length === 0
+                  ? "Aucun élément sélectionné"
+                  : `Exporter ${selectedFeatures.length} éléments sélectionnés en GeoJSON`
+              }
             >
               <Download size={16} />
-              GeoJSON ({selectedFeatures.length})
+              GeoJSON
             </button>
 
             <button
               className="btn btn-success"
               onClick={handleExportSelectedCsv}
               disabled={selectedFeatures.length === 0}
-              title={selectedFeatures.length === 0 ? "Aucun élément sélectionné" : `Exporter ${selectedFeatures.length} éléments sélectionnés en CSV`}
+              title={
+                selectedFeatures.length === 0
+                  ? "Aucun élément sélectionné"
+                  : `Exporter ${selectedFeatures.length} éléments sélectionnés en CSV`
+              }
             >
               <Download size={16} />
-              CSV ({selectedFeatures.length})
+              CSV
             </button>
           </div>
         </div>
 
         {/* Loading Indicator */}
         {loading && (
-          <div className="card fade-in" style={{ textAlign: 'center' }}>
+          <div className="card fade-in" style={{ textAlign: "center" }}>
             <div className="spinner"></div>
             <div className="stat-label">Chargement...</div>
           </div>
@@ -810,17 +934,18 @@ export const ModernMapView: React.FC = () => {
       </div>
 
       {/* Map */}
-      <div style={{ flex: 1, position: 'relative' }}>
+      <div style={{ flex: 1, position: "relative" }}>
         <MapContainer
           center={[48.8566, 2.3522]}
           zoom={13}
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url={darkMode
-              ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            url={
+              darkMode
+                ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             }
           />
 
@@ -831,31 +956,32 @@ export const ModernMapView: React.FC = () => {
             <Rectangle
               bounds={bbox}
               pathOptions={{
-                color: '#667eea',
+                color: "#667eea",
                 weight: 3,
                 fillOpacity: 0.2,
-                dashArray: '10, 5'
+                dashArray: "10, 5",
               }}
             />
           )}
 
           {/* Features */}
-          {features && features.map((feature, index) => {
-            try {
-              const properties = feature.properties || {};
+          {features &&
+            features.map((feature, index) => {
+              try {
+                const properties = feature.properties || {};
 
-              return (
-                <GeoJSON
-                  key={`${feature.id}-${index}`}
-                  data={feature}
-                  style={{
-                    color: properties.color || '#667eea',
-                    weight: 3,
-                    fillOpacity: 0.6,
-                  }}
-                  onEachFeature={(geoJsonFeature, layer) => {
-                    const props = geoJsonFeature.properties || {};
-                    layer.bindPopup(`
+                return (
+                  <GeoJSON
+                    key={`${feature.id}-${index}`}
+                    data={feature}
+                    style={{
+                      color: properties.color || "#667eea",
+                      weight: 3,
+                      fillOpacity: 0.6,
+                    }}
+                    onEachFeature={(geoJsonFeature, layer) => {
+                      const props = geoJsonFeature.properties || {};
+                      layer.bindPopup(`
                       <div style="
                         padding: 10px;
                         font-family: 'Inter', sans-serif;
@@ -867,7 +993,7 @@ export const ModernMapView: React.FC = () => {
                           font-size: 16px;
                           font-weight: 600;
                         ">
-                          ${props.name || 'Feature ' + props.id}
+                          ${props.name || "Feature " + props.id}
                         </h4>
                         <div style="
                           display: flex;
@@ -876,13 +1002,41 @@ export const ModernMapView: React.FC = () => {
                           font-size: 14px;
                           color: #636e72;
                         ">
-                          <div><strong>Couche:</strong> ${selectedLayer?.name || 'N/A'}</div>
-                          <div><strong>Type:</strong> ${props.type || 'N/A'}</div>
-                          ${props.height ? `<div><strong>Hauteur:</strong> ${props.height}m</div>` : ''}
-                          ${props.surface ? `<div><strong>Surface:</strong> ${props.surface} ha</div>` : ''}
-                          ${props.year ? `<div><strong>Année:</strong> ${props.year}</div>` : ''}
-                          ${props.validFromUtc ? `<div><strong>Depuis:</strong> ${formatDate(props.validFromUtc)}</div>` : ''}
-                          ${props.validToUtc ? `<div><strong>Jusqu'à:</strong> ${formatDate(props.validToUtc)}</div>` : ''}
+                          <div><strong>Couche:</strong> ${
+                            selectedLayer?.name || "N/A"
+                          }</div>
+                          <div><strong>Type:</strong> ${
+                            props.type || "N/A"
+                          }</div>
+                          ${
+                            props.height
+                              ? `<div><strong>Hauteur:</strong> ${props.height}m</div>`
+                              : ""
+                          }
+                          ${
+                            props.surface
+                              ? `<div><strong>Surface:</strong> ${props.surface} ha</div>`
+                              : ""
+                          }
+                          ${
+                            props.year
+                              ? `<div><strong>Année:</strong> ${props.year}</div>`
+                              : ""
+                          }
+                          ${
+                            props.validFromUtc
+                              ? `<div><strong>Depuis:</strong> ${formatDate(
+                                  props.validFromUtc
+                                )}</div>`
+                              : ""
+                          }
+                          ${
+                            props.validToUtc
+                              ? `<div><strong>Jusqu'à:</strong> ${formatDate(
+                                  props.validToUtc
+                                )}</div>`
+                              : ""
+                          }
                         </div>
                         <div style="
                           margin-top: 10px;
@@ -893,16 +1047,15 @@ export const ModernMapView: React.FC = () => {
                         "></div>
                       </div>
                     `);
-                  }}
-                />
-              );
-            } catch (error) {
-              console.error('Error rendering feature:', feature, error);
-              return null;
-            }
-          })}
+                    }}
+                  />
+                );
+              } catch (error) {
+                console.error("Error rendering feature:", feature, error);
+                return null;
+              }
+            })}
         </MapContainer>
-
       </div>
 
       {/* Selection Panel */}

@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
-import { MousePointer, Layers3, ChevronDown, ChevronUp, Target, Sparkles, X } from 'lucide-react';
-import type { Feature, Layer } from '../types/api';
+import React, { useState } from "react";
+import {
+  MousePointer,
+  Layers3,
+  ChevronDown,
+  ChevronUp,
+  Target,
+  Sparkles,
+  X,
+} from "lucide-react";
+import type { Feature, Layer } from "../types/api";
 
 interface SelectionPanelProps {
   isSelectionMode: boolean;
@@ -15,7 +23,7 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
   onToggleSelectionMode,
   selectedFeatures,
   onClearSelection,
-  layers
+  layers,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -203,13 +211,14 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
         .features-section {
           padding: 20px 24px 24px;
           transition: all 0.3s ease;
-          max-height: ${isExpanded ? '600px' : '0px'};
+          max-height: ${isExpanded ? "600px" : "0px"};
           overflow: hidden;
         }
 
         .features-header {
           display: flex;
           items: center;
+          align-items: center;
           justify-content: space-between;
           margin-bottom: 16px;
         }
@@ -468,7 +477,7 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
         <button
           onClick={onToggleSelectionMode}
           className={`toggle-btn ${
-            isSelectionMode ? 'toggle-btn-active' : 'toggle-btn-inactive'
+            isSelectionMode ? "toggle-btn-active" : "toggle-btn-inactive"
           }`}
         >
           {isSelectionMode ? (
@@ -491,9 +500,7 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
           <div className="features-title">
             <Layers3 size={18} />
             Éléments sélectionnés
-            <span className="features-count">
-              {selectedFeatures.length}
-            </span>
+            <span className="features-count">{selectedFeatures.length}</span>
           </div>
           {selectedFeatures.length > 0 && (
             <button onClick={onClearSelection} className="clear-button">
@@ -507,14 +514,15 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
           <div className="empty-state">
             <Target className="empty-state-icon" />
             <p className="empty-message">
-              Activez le mode sélection et dessinez une zone sur la carte pour sélectionner des éléments
+              Activez le mode sélection et dessinez une zone sur la carte pour
+              sélectionner des éléments
             </p>
           </div>
         ) : (
           <div className="features-list">
             {selectedFeatures.map((feature, index) => {
               const getLayerName = (layerId: number) => {
-                const layer = layers.find(l => l.id === layerId);
+                const layer = layers.find((l) => l.id === layerId);
                 return layer ? layer.name : `Couche ${layerId}`;
               };
 
@@ -523,35 +531,39 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
                 if (feature.properties?.name) return feature.properties.name;
                 if (feature.properties?.nom) return feature.properties.nom;
                 if (feature.properties?.title) return feature.properties.title;
-                if (feature.properties?.libelle) return feature.properties.libelle;
-                if (feature.properties?.denomination) return feature.properties.denomination;
-                if (feature.properties?.ligne) return `Ligne ${feature.properties.ligne}`;
-                if (feature.properties?.numero) return `Ligne ${feature.properties.numero}`;
+                if (feature.properties?.libelle)
+                  return feature.properties.libelle;
+                if (feature.properties?.denomination)
+                  return feature.properties.denomination;
+                if (feature.properties?.ligne)
+                  return `Ligne ${feature.properties.ligne}`;
+                if (feature.properties?.numero)
+                  return `Ligne ${feature.properties.numero}`;
 
                 // For transport features, check for line names or numbers
                 if (feature.layerId === 4) {
                   if (feature.properties?.color) {
                     // Extract line info from color or other properties
                     const colorToLine: { [key: string]: string } = {
-                      '#FFCD00': 'Ligne 1',
-                      '#0055C8': 'Ligne 2',
-                      '#837902': 'Ligne 3',
-                      '#CF009E': 'Ligne 4',
-                      '#FF7E2E': 'Ligne 5',
-                      '#6ECA97': 'Ligne 6',
-                      '#FA9ABA': 'Ligne 7',
-                      '#E19BDF': 'Ligne 8',
-                      '#B6BD00': 'Ligne 9',
-                      '#C9910D': 'Ligne 10',
-                      '#704B1C': 'Ligne 11',
-                      '#007852': 'Ligne 12',
-                      '#6EC4E8': 'Ligne 13',
-                      '#62259D': 'Ligne 14',
-                      '#F14C4D': 'RER A',
-                      '#4266B2': 'RER B',
-                      '#F99D1C': 'RER C',
-                      '#009639': 'RER D',
-                      '#281181': 'RER E'
+                      "#FFCD00": "Ligne 1",
+                      "#0055C8": "Ligne 2",
+                      "#837902": "Ligne 3",
+                      "#CF009E": "Ligne 4",
+                      "#FF7E2E": "Ligne 5",
+                      "#6ECA97": "Ligne 6",
+                      "#FA9ABA": "Ligne 7",
+                      "#E19BDF": "Ligne 8",
+                      "#B6BD00": "Ligne 9",
+                      "#C9910D": "Ligne 10",
+                      "#704B1C": "Ligne 11",
+                      "#007852": "Ligne 12",
+                      "#6EC4E8": "Ligne 13",
+                      "#62259D": "Ligne 14",
+                      "#F14C4D": "RER A",
+                      "#4266B2": "RER B",
+                      "#F99D1C": "RER C",
+                      "#009639": "RER D",
+                      "#281181": "RER E",
                     };
                     if (colorToLine[feature.properties.color]) {
                       return colorToLine[feature.properties.color];
@@ -567,55 +579,75 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
                 if (feature.properties?.type) {
                   // Clean up type display
                   const type = feature.properties.type;
-                  if (type === 'Metro') return 'Métro';
-                  if (type === 'RER') return 'RER';
-                  if (type === 'monument') return 'Monument';
-                  if (type === 'parc' || type === 'jardin') return 'Parc';
-                  if (type === 'musee' || type === 'museum') return 'Musée';
+                  if (type === "Metro") return "Métro";
+                  if (type === "RER") return "RER";
+                  if (type === "monument") return "Monument";
+                  if (type === "parc" || type === "jardin") return "Parc";
+                  if (type === "musee" || type === "museum") return "Musée";
                   return type;
                 }
 
-                if (feature.properties?.category) return feature.properties.category;
+                if (feature.properties?.category)
+                  return feature.properties.category;
                 if (feature.properties?.style) return feature.properties.style;
 
                 // Fallback to layer-based type detection using featureLayerId
-                if (featureLayerId === 2) return 'Monument';
-                if (featureLayerId === 3) return 'Parc';
-                if (featureLayerId === 4) return 'Transport';
-                if (featureLayerId === 5) return 'Musée';
-                return 'Élément';
+                if (featureLayerId === 2) return "Monument";
+                if (featureLayerId === 3) return "Parc";
+                if (featureLayerId === 4) return "Transport";
+                if (featureLayerId === 5) return "Musée";
+                return "Élément";
               };
 
               const getLayerColor = (layerId: number) => {
-                const layer = layers.find(l => l.id === layerId);
-                if (!layer) return '#6366f1';
+                const layer = layers.find((l) => l.id === layerId);
+                if (!layer) return "#6366f1";
 
                 // Assign colors based on layer name
                 const name = layer.name.toLowerCase();
-                if (name.includes('monument')) return '#dc2626'; // Rouge pour monuments
-                if (name.includes('parc') || name.includes('jardin')) return '#059669'; // Vert pour parcs
-                if (name.includes('métro') || name.includes('metro') || name.includes('ligne')) return '#2563eb'; // Bleu pour métro
-                if (name.includes('musée') || name.includes('musee')) return '#7c3aed'; // Violet pour musées
-                if (name.includes('default')) return '#6b7280'; // Gris pour default
+                if (name.includes("monument")) return "#dc2626"; // Rouge pour monuments
+                if (name.includes("parc") || name.includes("jardin"))
+                  return "#059669"; // Vert pour parcs
+                if (
+                  name.includes("métro") ||
+                  name.includes("metro") ||
+                  name.includes("ligne")
+                )
+                  return "#2563eb"; // Bleu pour métro
+                if (name.includes("musée") || name.includes("musee"))
+                  return "#7c3aed"; // Violet pour musées
+                if (name.includes("default")) return "#6b7280"; // Gris pour default
 
                 // Default color
-                return '#6366f1';
+                return "#6366f1";
               };
 
               // Get the correct layerId - it could be in feature.layerId or feature.properties.layerId
-              const featureLayerId = feature.layerId || feature.properties?.layerId;
+              const featureLayerId =
+                feature.layerId || feature.properties?.layerId;
 
               return (
-                <div key={feature.id} className="feature-item" style={{'--layer-color': getLayerColor(featureLayerId)} as any}>
+                <div
+                  key={feature.id}
+                  className="feature-item"
+                  style={
+                    { "--layer-color": getLayerColor(featureLayerId) } as any
+                  }
+                >
                   <div className="feature-header">
-                    <div className="feature-name">
-                      {getDisplayName()}
-                    </div>
+                    <div className="feature-name">{getDisplayName()}</div>
                     <div className="feature-id">#{feature.id}</div>
                   </div>
 
                   <div className="feature-meta">
-                    <span className="meta-tag layer-tag" style={{background: `${getLayerColor(featureLayerId)}15`, color: getLayerColor(featureLayerId), borderColor: `${getLayerColor(featureLayerId)}30`}}>
+                    <span
+                      className="meta-tag layer-tag"
+                      style={{
+                        background: `${getLayerColor(featureLayerId)}15`,
+                        color: getLayerColor(featureLayerId),
+                        borderColor: `${getLayerColor(featureLayerId)}30`,
+                      }}
+                    >
                       {getLayerName(featureLayerId)}
                     </span>
                     <span className="meta-tag type-tag">
@@ -623,84 +655,134 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({
                     </span>
                   </div>
 
-                  {feature.properties && Object.keys(feature.properties).length > 0 && (
-                    <div className="feature-properties">
-                      {Object.entries(feature.properties)
-                        .filter(([key, value]) => {
-                          // Skip these display-related keys
-                          if (['name', 'nom', 'title', 'libelle', 'type', 'category', 'style', 'color', 'ligne', 'numero'].includes(key)) {
-                            return false;
-                          }
-                          // Skip null values
-                          if (value === null || value === 'null' || value === undefined) {
-                            return false;
-                          }
-                          return true;
-                        })
-                        .sort(([keyA], [keyB]) => {
-                          // Prioritize important keys
-                          const priority: { [key: string]: number } = {
-                            'terminus_1': 1, 'terminus_2': 2, 'stations': 3, 'opened': 4,
-                            'adresse': 1, 'arrondissement': 2, 'architect': 3,
-                            'superficie': 1, 'ouverture': 2, 'metro_proche': 3,
-                            'collection': 1, 'horaires': 2, 'prix': 3,
-                            'validFromUtc': 5, 'validToUtc': 6, 'layerId': 10
-                          };
-                          return (priority[keyA] || 999) - (priority[keyB] || 999);
-                        })
-                        .slice(0, 3)
-                        .map(([key, value]) => {
-                          // Translate common keys to French
-                          const keyTranslations: { [key: string]: string } = {
-                            'terminus_1': 'Terminus 1',
-                            'terminus_2': 'Terminus 2',
-                            'stations': 'Stations',
-                            'opened': 'Ouverture',
-                            'adresse': 'Adresse',
-                            'arrondissement': 'Arrdt',
-                            'architect': 'Architecte',
-                            'superficie': 'Superficie',
-                            'ouverture': 'Ouvert',
-                            'metro_proche': 'Métro',
-                            'collection': 'Collection',
-                            'horaires': 'Horaires',
-                            'prix': 'Prix',
-                            'validFromUtc': 'Valide depuis',
-                            'validToUtc': 'Valide jusqu\'à',
-                            'layerId': 'Couche'
-                          };
-
-                          const displayKey = keyTranslations[key] || key;
-                          let displayValue = String(value);
-
-                          // Format specific values
-                          if (key === 'superficie' && !isNaN(Number(value))) {
-                            displayValue = `${Number(value).toLocaleString()} m²`;
-                          } else if (key === 'stations' && !isNaN(Number(value))) {
-                            displayValue = `${value} stations`;
-                          } else if (key === 'opened' && value.toString().match(/^\d{4}$/)) {
-                            displayValue = value.toString();
-                          } else if ((key === 'validFromUtc' || key === 'validToUtc') && value) {
-                            // Format dates
-                            try {
-                              const date = new Date(value.toString());
-                              displayValue = date.toLocaleDateString('fr-FR');
-                            } catch {
-                              displayValue = value.toString();
+                  {feature.properties &&
+                    Object.keys(feature.properties).length > 0 && (
+                      <div className="feature-properties">
+                        {Object.entries(feature.properties)
+                          .filter(([key, value]) => {
+                            // Skip these display-related keys
+                            if (
+                              [
+                                "name",
+                                "nom",
+                                "title",
+                                "libelle",
+                                "type",
+                                "category",
+                                "style",
+                                "color",
+                                "ligne",
+                                "numero",
+                              ].includes(key)
+                            ) {
+                              return false;
                             }
-                          } else if (displayValue.length > 30) {
-                            displayValue = `${displayValue.substring(0, 30)}...`;
-                          }
+                            // Skip null values
+                            if (
+                              value === null ||
+                              value === "null" ||
+                              value === undefined
+                            ) {
+                              return false;
+                            }
+                            return true;
+                          })
+                          .sort(([keyA], [keyB]) => {
+                            // Prioritize important keys
+                            const priority: { [key: string]: number } = {
+                              terminus_1: 1,
+                              terminus_2: 2,
+                              stations: 3,
+                              opened: 4,
+                              adresse: 1,
+                              arrondissement: 2,
+                              architect: 3,
+                              superficie: 1,
+                              ouverture: 2,
+                              metro_proche: 3,
+                              collection: 1,
+                              horaires: 2,
+                              prix: 3,
+                              validFromUtc: 5,
+                              validToUtc: 6,
+                              layerId: 10,
+                            };
+                            return (
+                              (priority[keyA] || 999) - (priority[keyB] || 999)
+                            );
+                          })
+                          .slice(0, 3)
+                          .map(([key, value]) => {
+                            // Translate common keys to French
+                            const keyTranslations: { [key: string]: string } = {
+                              terminus_1: "Terminus 1",
+                              terminus_2: "Terminus 2",
+                              stations: "Stations",
+                              opened: "Ouverture",
+                              adresse: "Adresse",
+                              arrondissement: "Arrdt",
+                              architect: "Architecte",
+                              superficie: "Superficie",
+                              ouverture: "Ouvert",
+                              metro_proche: "Métro",
+                              collection: "Collection",
+                              horaires: "Horaires",
+                              prix: "Prix",
+                              validFromUtc: "Valide depuis",
+                              validToUtc: "Valide jusqu'à",
+                              layerId: "Couche",
+                            };
 
-                          return (
-                            <div key={key} className="property-item">
-                              <span className="property-key">{displayKey}</span>
-                              <span className="property-value">{displayValue}</span>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  )}
+                            const displayKey = keyTranslations[key] || key;
+                            let displayValue = String(value);
+
+                            // Format specific values
+                            if (key === "superficie" && !isNaN(Number(value))) {
+                              displayValue = `${Number(
+                                value
+                              ).toLocaleString()} m²`;
+                            } else if (
+                              key === "stations" &&
+                              !isNaN(Number(value))
+                            ) {
+                              displayValue = `${value} stations`;
+                            } else if (
+                              key === "opened" &&
+                              value.toString().match(/^\d{4}$/)
+                            ) {
+                              displayValue = value.toString();
+                            } else if (
+                              (key === "validFromUtc" ||
+                                key === "validToUtc") &&
+                              value
+                            ) {
+                              // Format dates
+                              try {
+                                const date = new Date(value.toString());
+                                displayValue = date.toLocaleDateString("fr-FR");
+                              } catch {
+                                displayValue = value.toString();
+                              }
+                            } else if (displayValue.length > 30) {
+                              displayValue = `${displayValue.substring(
+                                0,
+                                30
+                              )}...`;
+                            }
+
+                            return (
+                              <div key={key} className="property-item">
+                                <span className="property-key">
+                                  {displayKey}
+                                </span>
+                                <span className="property-value">
+                                  {displayValue}
+                                </span>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    )}
                 </div>
               );
             })}
