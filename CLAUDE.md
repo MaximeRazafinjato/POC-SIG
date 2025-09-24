@@ -16,11 +16,15 @@ POC-SIG est une application de démonstration d'un système d'information géogr
 
 ## Fonctionnalités principales
 - Affichage de cartes interactives avec Leaflet
-- Sélection spatiale d'éléments géographiques
+- Sélection spatiale d'éléments géographiques (rectangle de sélection)
 - Interface moderne avec design glassmorphism
 - Support des requêtes spatiales (intersects, within)
 - Pagination des résultats
 - Gestion de couches (layers) géographiques
+- **Export de données** :
+  - Export complet par couche (GeoJSON/CSV)
+  - Export des éléments sélectionnés spatialement (GeoJSON/CSV)
+  - Gestion spéciale de la couche "Default" (agrégation de toutes les couches)
 
 ## Commandes de démarrage
 
@@ -67,6 +71,8 @@ POC-SIG/
 - `GET /api/features/{layerId}` - Récupérer les features d'une couche
 - `GET /api/features/{layerId}/stats` - Statistiques d'une couche
 - `POST /api/features` - Créer une nouvelle feature
+- `GET /api/export/{layerId}/geojson` - Exporter une couche en GeoJSON
+- `GET /api/export/{layerId}/csv` - Exporter une couche en CSV
 - `POST /api/admin/clean-database` - Nettoyer la base de données
 - `POST /api/admin/load-demo-data` - Charger les données de démonstration
 
@@ -86,6 +92,9 @@ interface Feature {
 ## Composants UI principaux
 - **SelectionPanel**: Panel flottant avec design glassmorphism pour la sélection spatiale
 - **ModernMapView**: Composant carte avec Leaflet et contrôles de sélection
+  - Section "Export des données" : Export complet par couche
+  - Section "Export sélection" : Export des éléments sélectionnés spatialement
+  - Gestion automatique de la couche "Default" (agrégation des autres couches)
 
 ## Configuration CORS
 Le backend est configuré pour accepter les requêtes du frontend sur localhost:3000.
