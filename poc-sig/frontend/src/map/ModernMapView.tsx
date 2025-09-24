@@ -22,7 +22,8 @@ import {
   Settings,
   Database,
   MapPin,
-  Globe
+  Globe,
+  MousePointer
 } from 'lucide-react';
 import { layersApi, featuresApi, exportApi, downloadFile, api } from '../api/client';
 import { SelectionPanel } from '../components/SelectionPanel';
@@ -334,8 +335,57 @@ export const ModernMapView: React.FC = () => {
     if (!selectedLayer) return;
 
     try {
-      const response = await exportApi.exportGeoJson(selectedLayer.id, filters);
-      downloadFile(response.blob, response.filename);
+      if (selectedLayer.id === 1) {
+        // Pour la couche "Default", utiliser l'API features pour récupérer toutes les données
+        const allFeatures: any[] = [];
+        const layersToExport = layers.filter(layer => layer.id !== 1);
+
+        for (const layer of layersToExport) {
+          try {
+            console.log(`Exporting features from layer "${layer.name}" (ID: ${layer.id})`);
+            const response = await featuresApi.getFeatures(layer.id, {
+              ...filters,
+              pageSize: 1000
+            });
+
+            const layerFeatures = response.features || response.items || [];
+            console.log(`Found ${layerFeatures.length} features in layer "${layer.name}"`);
+
+            // Convertir en format GeoJSON
+            layerFeatures.forEach((feature: any) => {
+              const geoJsonFeature = {
+                type: "Feature",
+                id: feature.id,
+                geometry: feature.geometry,
+                properties: {
+                  ...feature.properties,
+                  layerId: feature.layerId,
+                  layerName: layer.name,
+                  validFromUtc: feature.validFromUtc,
+                  validToUtc: feature.validToUtc
+                }
+              };
+              allFeatures.push(geoJsonFeature);
+            });
+          } catch (error) {
+            console.error(`Error exporting layer ${layer.name}:`, error);
+          }
+        }
+
+        // Créer un GeoJSON combiné
+        const combinedGeoJson = {
+          type: "FeatureCollection",
+          features: allFeatures
+        };
+
+        console.log(`Exporting ${allFeatures.length} total features`);
+        const blob = new Blob([JSON.stringify(combinedGeoJson, null, 2)], { type: 'application/json' });
+        downloadFile(blob, 'toutes-les-couches.geojson');
+      } else {
+        // Export normal pour une couche spécifique
+        const response = await exportApi.exportGeoJson(selectedLayer.id, filters);
+        downloadFile(response.blob, response.filename);
+      }
     } catch (error) {
       console.error('Error exporting GeoJSON:', error);
     }
@@ -345,10 +395,147 @@ export const ModernMapView: React.FC = () => {
     if (!selectedLayer) return;
 
     try {
-      const response = await exportApi.exportCsv(selectedLayer.id, filters);
-      downloadFile(response.blob, response.filename);
+      if (selectedLayer.id === 1) {
+        // Pour la couche "Default", utiliser l'API features pour récupérer toutes les données
+        const allFeatures: any[] = [];
+        const layersToExport = layers.filter(layer => layer.id !== 1);
+
+        for (const layer of layersToExport) {
+          try {
+            console.log(`Exporting CSV from layer "${layer.name}" (ID: ${layer.id})`);
+            const response = await featuresApi.getFeatures(layer.id, {
+              ...filters,
+              pageSize: 1000
+            });
+
+            const layerFeatures = response.features || response.items || [];
+            console.log(`Found ${layerFeatures.length} features for CSV in layer "${layer.name}"`);
+
+            // Ajouter les features avec le nom de la couche
+            layerFeatures.forEach((feature: any) => {
+              allFeatures.push({
+                id: feature.id,
+                layerName: layer.name,
+                layerId: feature.layerId,
+                validFromUtc: feature.validFromUtc,
+                validToUtc: feature.validToUtc,
+                ...feature.properties
+              });
+            });
+          } catch (error) {
+            console.error(`Error exporting CSV from layer ${layer.name}:`, error);
+          }
+        }
+
+        if (allFeatures.length > 0) {
+          // Créer les en-têtes CSV
+          const allKeys = new Set<string>();
+          allFeatures.forEach(feature => {
+            Object.keys(feature).forEach(key => allKeys.add(key));
+          });
+          const headers = Array.from(allKeys);
+
+          // Créer les lignes CSV
+          const csvLines = [headers.join(',')];
+          allFeatures.forEach(feature => {
+            const row = headers.map(header => {
+              const value = feature[header];
+              return value !== null && value !== undefined ? `"${String(value).replace(/"/g, '""')}"` : '';
+            });
+            csvLines.push(row.join(','));
+          });
+
+          const combinedCsv = csvLines.join('\n');
+          console.log(`Exporting ${allFeatures.length} total features to CSV`);
+          const blob = new Blob([combinedCsv], { type: 'text/csv' });
+          downloadFile(blob, 'toutes-les-couches.csv');
+        } else {
+          console.log('No features to export to CSV');
+        }
+      } else {
+        // Export normal pour une couche spécifique
+        const response = await exportApi.exportCsv(selectedLayer.id, filters);
+        downloadFile(response.blob, response.filename);
+      }
     } catch (error) {
       console.error('Error exporting CSV:', error);
+    }
+  };
+
+  const handleExportSelectedGeoJson = () => {
+    if (selectedFeatures.length === 0) {
+      alert('Aucun élément sélectionné à exporter');
+      return;
+    }
+
+    try {
+      // Convertir les features sélectionnées en GeoJSON
+      const geoJsonFeatures = selectedFeatures.map((feature: any) => ({
+        type: "Feature",
+        id: feature.id,
+        geometry: feature.geometry,
+        properties: {
+          ...feature.properties,
+          layerId: feature.layerId || feature.properties?.layerId,
+          validFromUtc: feature.validFromUtc,
+          validToUtc: feature.validToUtc
+        }
+      }));
+
+      const geoJson = {
+        type: "FeatureCollection",
+        features: geoJsonFeatures
+      };
+
+      console.log(`Exporting ${selectedFeatures.length} selected features to GeoJSON`);
+      const blob = new Blob([JSON.stringify(geoJson, null, 2)], { type: 'application/json' });
+      downloadFile(blob, `elements-selectionnes-${new Date().toISOString().split('T')[0]}.geojson`);
+    } catch (error) {
+      console.error('Error exporting selected features to GeoJSON:', error);
+      alert('Erreur lors de l\'export GeoJSON');
+    }
+  };
+
+  const handleExportSelectedCsv = () => {
+    if (selectedFeatures.length === 0) {
+      alert('Aucun élément sélectionné à exporter');
+      return;
+    }
+
+    try {
+      // Préparer les données pour CSV
+      const csvData = selectedFeatures.map((feature: any) => ({
+        id: feature.id,
+        layerId: feature.layerId || feature.properties?.layerId,
+        validFromUtc: feature.validFromUtc,
+        validToUtc: feature.validToUtc,
+        ...feature.properties
+      }));
+
+      // Créer les en-têtes CSV
+      const allKeys = new Set<string>();
+      csvData.forEach(item => {
+        Object.keys(item).forEach(key => allKeys.add(key));
+      });
+      const headers = Array.from(allKeys);
+
+      // Créer les lignes CSV
+      const csvLines = [headers.join(',')];
+      csvData.forEach(item => {
+        const row = headers.map(header => {
+          const value = item[header];
+          return value !== null && value !== undefined ? `"${String(value).replace(/"/g, '""')}"` : '';
+        });
+        csvLines.push(row.join(','));
+      });
+
+      const csvContent = csvLines.join('\n');
+      console.log(`Exporting ${selectedFeatures.length} selected features to CSV`);
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      downloadFile(blob, `elements-selectionnes-${new Date().toISOString().split('T')[0]}.csv`);
+    } catch (error) {
+      console.error('Error exporting selected features to CSV:', error);
+      alert('Erreur lors de l\'export CSV');
     }
   };
 
@@ -580,6 +767,35 @@ export const ModernMapView: React.FC = () => {
             >
               <Download size={16} />
               CSV
+            </button>
+          </div>
+        </div>
+
+        {/* Export des éléments sélectionnés */}
+        <div className="card fade-in">
+          <div className="card-title">
+            <MousePointer size={18} />
+            Export sélection
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <button
+              className="btn btn-success"
+              onClick={handleExportSelectedGeoJson}
+              disabled={selectedFeatures.length === 0}
+              title={selectedFeatures.length === 0 ? "Aucun élément sélectionné" : `Exporter ${selectedFeatures.length} éléments sélectionnés en GeoJSON`}
+            >
+              <Download size={16} />
+              GeoJSON ({selectedFeatures.length})
+            </button>
+
+            <button
+              className="btn btn-success"
+              onClick={handleExportSelectedCsv}
+              disabled={selectedFeatures.length === 0}
+              title={selectedFeatures.length === 0 ? "Aucun élément sélectionné" : `Exporter ${selectedFeatures.length} éléments sélectionnés en CSV`}
+            >
+              <Download size={16} />
+              CSV ({selectedFeatures.length})
             </button>
           </div>
         </div>
