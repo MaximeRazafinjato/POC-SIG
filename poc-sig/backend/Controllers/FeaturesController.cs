@@ -39,6 +39,17 @@ public class FeaturesController : ControllerBase
     {
         var stopwatch = Stopwatch.StartNew();
 
+        // Create cache key based on all parameters
+        var cacheKey = $"features_{layerId}_{bbox}_{operation}_{bufferMeters}_{validFrom}_{validTo}_{page}_{pageSize}";
+
+        // Try to get from cache first
+        if (_cache.TryGetValue(cacheKey, out object? cachedResult))
+        {
+            _logger.LogInformation("Returning cached features for layer {LayerId} (Cache hit in {ElapsedMilliseconds}ms)",
+                layerId, stopwatch.ElapsedMilliseconds);
+            return Ok(cachedResult);
+        }
+
         try
         {
             var query = _context.Features
@@ -150,7 +161,7 @@ public class FeaturesController : ControllerBase
             _logger.LogInformation("Retrieved {Count} features from layer {LayerId} in {ElapsedMs}ms (Total: {Total}, Page: {Page})",
                 features.Count, layerId, stopwatch.ElapsedMilliseconds, totalCount, page);
 
-            return Ok(new
+            var result = new
             {
                 type = "FeatureCollection",
                 features = JsonSerializer.Deserialize<JsonElement>(geoJson).GetProperty("features"),
@@ -159,7 +170,16 @@ public class FeaturesController : ControllerBase
                 pageSize,
                 totalPages = (int)Math.Ceiling((double)totalCount / pageSize),
                 queryTimeMs = stopwatch.ElapsedMilliseconds
-            });
+            };
+
+            // Cache the result for 5 minutes
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5))
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+            _cache.Set(cacheKey, result, cacheOptions);
+
+            return Ok(result);
         }
         catch (Exception ex)
         {
