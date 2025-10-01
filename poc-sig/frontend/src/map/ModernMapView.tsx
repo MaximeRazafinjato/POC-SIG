@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -9,6 +9,8 @@ import {
 import { LatLngBounds, LatLng } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../styles/modern.css";
+import "../styles/clusters.css";
+import { ClusteredMap } from "../components/ClusteredMap";
 import {
   Map,
   Layers,
@@ -961,9 +963,20 @@ export const ModernMapView: React.FC = () => {
             />
           )}
 
-          {/* Features */}
+          {/* Optimized Feature Rendering */}
+          {/* Render clustered points for performance */}
+          {features && features.length > 0 && (
+            <ClusteredMap
+              features={features}
+              onFeatureClick={(feature) => {
+                console.log("Feature clicked:", feature);
+              }}
+            />
+          )}
+
+          {/* Render non-point geometries separately */}
           {features &&
-            features.map((feature, index) => {
+            features.filter(f => f.geometry?.type !== 'Point').map((feature, index) => {
               try {
                 const properties = feature.properties || {};
 
