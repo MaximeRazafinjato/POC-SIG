@@ -3,7 +3,7 @@
                      {
                          "properties":  {
                                             "validFrom":  "2024-01-01T00:00:00Z",
-                                            "layer":  "RiviÃ¨res",
+                                            "layer":  "Rivières",
                                             "type":  "Cours d\u0027eau",
                                             "color":  "#1E90FF",
                                             "bassin":  "Rhin-Meuse",
@@ -34,7 +34,7 @@
                      {
                          "properties":  {
                                             "validFrom":  "2024-01-01T00:00:00Z",
-                                            "layer":  "RiviÃ¨res",
+                                            "layer":  "Rivières",
                                             "type":  "Cours d\u0027eau",
                                             "color":  "#1E90FF",
                                             "bassin":  "Rhin-Meuse",
@@ -65,7 +65,7 @@
                      {
                          "properties":  {
                                             "validFrom":  "2024-01-01T00:00:00Z",
-                                            "layer":  "RiviÃ¨res",
+                                            "layer":  "Rivières",
                                             "type":  "Cours d\u0027eau",
                                             "color":  "#1E90FF",
                                             "bassin":  "Rhin-Meuse",
@@ -96,7 +96,7 @@
                      {
                          "properties":  {
                                             "validFrom":  "2024-01-01T00:00:00Z",
-                                            "layer":  "RiviÃ¨res",
+                                            "layer":  "Rivières",
                                             "type":  "Cours d\u0027eau",
                                             "color":  "#1E90FF",
                                             "bassin":  "Seine-Normandie",
@@ -127,7 +127,7 @@
                      {
                          "properties":  {
                                             "validFrom":  "2024-01-01T00:00:00Z",
-                                            "layer":  "RiviÃ¨res",
+                                            "layer":  "Rivières",
                                             "type":  "Cours d\u0027eau",
                                             "color":  "#1E90FF",
                                             "bassin":  "Rhin-Meuse",
@@ -158,7 +158,7 @@
                      {
                          "properties":  {
                                             "validFrom":  "2024-01-01T00:00:00Z",
-                                            "layer":  "RiviÃ¨res",
+                                            "layer":  "Rivières",
                                             "type":  "Cours d\u0027eau",
                                             "color":  "#1E90FF",
                                             "bassin":  "Rhin-Meuse",
@@ -196,7 +196,7 @@
                                             "category":  "plan_eau",
                                             "profondeur_max":  38,
                                             "surface_ha":  115,
-                                            "name":  "Lac de GÃ©rardmer"
+                                            "name":  "Lac de Gérardmer"
                                         },
                          "type":  "Feature",
                          "geometry":  {
@@ -217,7 +217,7 @@
                                             "category":  "plan_eau",
                                             "profondeur_max":  78,
                                             "surface_ha":  304,
-                                            "name":  "Lac de Pierre-PercÃ©e"
+                                            "name":  "Lac de Pierre-Percée"
                                         },
                          "type":  "Feature",
                          "geometry":  {
@@ -338,8 +338,8 @@
                                             "capacite":  "450000 EH",
                                             "layer":  "Infrastructures",
                                             "category":  "infrastructure",
-                                            "type":  "Station Ã©puration",
-                                            "name":  "Station Ã©puration Strasbourg",
+                                            "type":  "Station épuration",
+                                            "name":  "Station épuration Strasbourg",
                                             "departement":  "Bas-Rhin",
                                             "validFrom":  "2024-01-01T00:00:00Z"
                                         },
@@ -358,8 +358,8 @@
                                             "capacite":  "300000 EH",
                                             "layer":  "Infrastructures",
                                             "category":  "infrastructure",
-                                            "type":  "Station Ã©puration",
-                                            "name":  "Station Ã©puration Nancy",
+                                            "type":  "Station épuration",
+                                            "name":  "Station épuration Nancy",
                                             "departement":  "Meurthe-et-Moselle",
                                             "validFrom":  "2024-01-01T00:00:00Z"
                                         },
@@ -378,8 +378,8 @@
                                             "capacite":  "230000 EH",
                                             "layer":  "Infrastructures",
                                             "category":  "infrastructure",
-                                            "type":  "Station Ã©puration",
-                                            "name":  "Station Ã©puration Metz",
+                                            "type":  "Station épuration",
+                                            "name":  "Station épuration Metz",
                                             "departement":  "Moselle",
                                             "validFrom":  "2024-01-01T00:00:00Z"
                                         },
@@ -399,7 +399,7 @@
                                             "layer":  "Infrastructures",
                                             "category":  "infrastructure",
                                             "type":  "Barrage",
-                                            "name":  "Barrage de Pierre-PercÃ©e",
+                                            "name":  "Barrage de Pierre-Percée",
                                             "departement":  "Meurthe-et-Moselle",
                                             "validFrom":  "2024-01-01T00:00:00Z"
                                         },
