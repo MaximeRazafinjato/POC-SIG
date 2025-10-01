@@ -1,0 +1,471 @@
+{
+    "features":  [
+                     {
+                         "properties":  {
+                                            "code_bss":  "01586X0064/F.E.D.",
+                                            "departement":  "Marne",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "date_debut":  "2002-04-15",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Saint-Mard-lÃ¨s-Rouffy",
+                                            "color":  "#4169E1",
+                                            "name":  "Saint-Mard-lÃ¨s-Rouffy - PiÃ©zomÃ¨tre 01586X0064/F.E.D.",
+                                            "profondeur":  25,
+                                            "altitude_sol":  "89.0"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              4.093781595,
+                                                              48.961999858
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "04454X0089/PK11.0",
+                                            "departement":  "Haut-Rhin",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "date_debut":  "1966-11-15",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Kembs",
+                                            "color":  "#4169E1",
+                                            "name":  "Kembs - PiÃ©zomÃ¨tre 04454X0089/PK11.0",
+                                            "profondeur":  0,
+                                            "altitude_sol":  "232.12"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              7.507684613,
+                                                              47.699311779
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "departement":  "Vosges",
+                                            "layer":  "Lacs et plans d\u0027eau",
+                                            "type":  "Lac",
+                                            "color":  "#00CED1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "lac",
+                                            "commune":  "GÃ©rardmer",
+                                            "profondeur_max":  38,
+                                            "surface_ha":  115,
+                                            "name":  "Lac de GÃ©rardmer"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              6.2,
+                                                              48.9
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "departement":  "Bas-Rhin",
+                                            "layer":  "RiviÃ¨res",
+                                            "type":  "Fleuve",
+                                            "color":  "#4682B4",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "cours_eau",
+                                            "debit_moyen_m3s":  1080,
+                                            "name":  "Rhin - Section Strasbourg",
+                                            "qualite_eau":  "Bonne"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              [
+                                                                  7.34,
+                                                                  48.58
+                                                              ],
+                                                              [
+                                                                  7.35,
+                                                                  48.57
+                                                              ],
+                                                              [
+                                                                  7.36,
+                                                                  48.56
+                                                              ]
+                                                          ],
+                                          "type":  "LineString"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "capacite":  "150000 EH",
+                                            "departement":  "Moselle",
+                                            "layer":  "Infrastructures",
+                                            "type":  "Station Ã©puration",
+                                            "color":  "#FFD700",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "infrastructure",
+                                            "commune":  "Metz",
+                                            "name":  "Station de traitement de Metz"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              5.9,
+                                                              49.2
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "04138X0067/PK13.0",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Niffer",
+                                            "name":  "Niffer - PiÃ©zomÃ¨tre 04138X0067/PK13.0",
+                                            "profondeur":  16
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              7.521336367,
+                                                              47.714657851
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "04134X0057/PK23.0",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Ottmarsheim",
+                                            "name":  "Ottmarsheim - PiÃ©zomÃ¨tre 04134X0057/PK23.0",
+                                            "profondeur":  9
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              7.530654934,
+                                                              47.797436045
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "04454X0064/PK3.0",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Rosenau",
+                                            "name":  "Rosenau - PiÃ©zomÃ¨tre 04454X0064/PK3.0",
+                                            "profondeur":  32
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              7.546157681,
+                                                              47.634316666
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "04138X0071/PK14.0",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Petit-Landau",
+                                            "name":  "Petit-Landau - PiÃ©zomÃ¨tre 04138X0071/PK14.0",
+                                            "profondeur":  30
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              7.530515635,
+                                                              47.721098627
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "04134X0059/PK24.0",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Bantzenheim",
+                                            "name":  "Bantzenheim - PiÃ©zomÃ¨tre 04134X0059/PK24.0",
+                                            "profondeur":  20
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              7.536154514,
+                                                              47.805753323
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "04134X0060/PK25.0",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "ChalampÃ©",
+                                            "name":  "ChalampÃ© - PiÃ©zomÃ¨tre 04134X0060/PK25.0",
+                                            "profondeur":  22
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              7.541247311,
+                                                              47.813998421
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "03423X0020/100",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "GuÃ©mar",
+                                            "name":  "GuÃ©mar - PiÃ©zomÃ¨tre 03423X0020/100",
+                                            "profondeur":  24
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              7.396858871,
+                                                              48.190278803
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "02282X0023/F",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Ã‰pinal",
+                                            "name":  "Ã‰pinal - PiÃ©zomÃ¨tre 02282X0023/F",
+                                            "profondeur":  43
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              6.950309917,
+                                                              48.291953522
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "01125X0114/S1",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Bar-le-Duc",
+                                            "name":  "Bar-le-Duc - PiÃ©zomÃ¨tre 01125X0114/S1",
+                                            "profondeur":  18
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              5.137734223,
+                                                              48.768835765
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "code_bss":  "01072X0085/S2",
+                                            "departement":  "Grand Est",
+                                            "layer":  "PiÃ©zomÃ¨tres",
+                                            "type":  "PiÃ©zomÃ¨tre",
+                                            "color":  "#4169E1",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "nappe_phreatique",
+                                            "commune":  "Reims",
+                                            "name":  "Reims - PiÃ©zomÃ¨tre 01072X0085/S2",
+                                            "profondeur":  28
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              4.363206509,
+                                                              49.050097165
+                                                          ],
+                                          "type":  "Point"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "departement":  "Grand Est",
+                                            "layer":  "RiviÃ¨res",
+                                            "type":  "RiviÃ¨re",
+                                            "color":  "#4682B4",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "cours_eau",
+                                            "debit_moyen_m3s":  43,
+                                            "name":  "RiviÃ¨re Moselle",
+                                            "qualite_eau":  "Moyenne"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              [
+                                                                  6.16,
+                                                                  49.12
+                                                              ],
+                                                              [
+                                                                  6.18,
+                                                                  49.1
+                                                              ],
+                                                              [
+                                                                  6.2,
+                                                                  49.08
+                                                              ]
+                                                          ],
+                                          "type":  "LineString"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "departement":  "Grand Est",
+                                            "layer":  "RiviÃ¨res",
+                                            "type":  "RiviÃ¨re",
+                                            "color":  "#4682B4",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "cours_eau",
+                                            "debit_moyen_m3s":  199,
+                                            "name":  "RiviÃ¨re Meuse",
+                                            "qualite_eau":  "Moyenne"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              [
+                                                                  5.38,
+                                                                  49.54
+                                                              ],
+                                                              [
+                                                                  5.4,
+                                                                  49.52
+                                                              ],
+                                                              [
+                                                                  5.42,
+                                                                  49.5
+                                                              ]
+                                                          ],
+                                          "type":  "LineString"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "departement":  "Grand Est",
+                                            "layer":  "RiviÃ¨res",
+                                            "type":  "RiviÃ¨re",
+                                            "color":  "#4682B4",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "cours_eau",
+                                            "debit_moyen_m3s":  90,
+                                            "name":  "RiviÃ¨re Marne",
+                                            "qualite_eau":  "Moyenne"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              [
+                                                                  4.36,
+                                                                  48.95
+                                                              ],
+                                                              [
+                                                                  4.38,
+                                                                  48.93
+                                                              ],
+                                                              [
+                                                                  4.4,
+                                                                  48.91
+                                                              ]
+                                                          ],
+                                          "type":  "LineString"
+                                      }
+                     },
+                     {
+                         "properties":  {
+                                            "departement":  "Grand Est",
+                                            "layer":  "RiviÃ¨res",
+                                            "type":  "RiviÃ¨re",
+                                            "color":  "#4682B4",
+                                            "validFrom":  "2024-01-01T00:00:00Z",
+                                            "category":  "cours_eau",
+                                            "debit_moyen_m3s":  15,
+                                            "name":  "RiviÃ¨re Ill",
+                                            "qualite_eau":  "Bonne"
+                                        },
+                         "type":  "Feature",
+                         "geometry":  {
+                                          "coordinates":  [
+                                                              [
+                                                                  7.75,
+                                                                  48.58
+                                                              ],
+                                                              [
+                                                                  7.73,
+                                                                  48.56
+                                                              ],
+                                                              [
+                                                                  7.71,
+                                                                  48.54
+                                                              ]
+                                                          ],
+                                          "type":  "LineString"
+                                      }
+                     }
+                 ],
+    "type":  "FeatureCollection"
+}
