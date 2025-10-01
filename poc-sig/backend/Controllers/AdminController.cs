@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PocSig.Infrastructure;
+using System.Text.Json;
 
 namespace PocSig.Controllers;
 
@@ -93,55 +94,50 @@ public class AdminController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Loading all demo data...");
+            _logger.LogInformation("Loading Grand Est water resources demo data...");
 
-            var demoFiles = new[]
-            {
-                ("paris_monuments.geojson", "Monuments de Paris"),
-                ("paris_parks.geojson", "Parcs et Jardins"),
-                ("paris_metro.geojson", "Lignes de Métro"),
-                ("paris_museums.geojson", "Musées")
-            };
-
+            // Use the new comprehensive Grand Est water resources data file with 500+ real data points
+            var fileName = "grand_est_eau_complet.geojson";
             var results = new List<object>();
 
-            foreach (var (fileName, layerName) in demoFiles)
+            try
             {
-                try
-                {
-                    // Import the file directly with automatic layer creation
-                    var importLogger = _loggerFactory.CreateLogger<PocSig.ETL.ImportGeoJsonCommand>();
-                    var importCommand = new PocSig.ETL.ImportGeoJsonCommand(_context, importLogger);
-                    var result = await importCommand.ExecuteAsync(null, layerName, fileName);
+                // Import the comprehensive Grand Est water data file
+                var importLogger = _loggerFactory.CreateLogger<PocSig.ETL.ImportGeoJsonCommand>();
+                var importCommand = new PocSig.ETL.ImportGeoJsonCommand(_context, importLogger);
 
-                    results.Add(new
-                    {
-                        fileName,
-                        layerName,
-                        success = true,
-                        message = result
-                    });
+                // Import all features into a single layer
+                var result = await importCommand.ExecuteAsync(null, "Ressources en eau - Grand Est", fileName);
 
-                    _logger.LogInformation("Successfully imported {FileName} into layer '{LayerName}'",
-                        fileName, layerName);
-                }
-                catch (Exception ex)
+                results.Add(new
                 {
-                    _logger.LogError(ex, "Failed to import {FileName}", fileName);
-                    results.Add(new
-                    {
-                        fileName,
-                        layerName,
-                        success = false,
-                        error = ex.Message
-                    });
-                }
+                    fileName,
+                    layerName = "Ressources en eau - Grand Est",
+                    success = true,
+                    message = result
+                });
+
+                _logger.LogInformation("Successfully imported {FileName} with Grand Est water resources data", fileName);
+
+                // Create additional specialized layers from the imported data
+                await CreateSpecializedLayers();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to import {FileName}", fileName);
+                results.Add(new
+                {
+                    fileName,
+                    layerName = "Ressources en eau - Grand Est",
+                    success = false,
+                    error = ex.Message
+                });
             }
 
             return Ok(new
             {
                 success = true,
-                message = "Demo data loading completed",
+                message = "Grand Est water resources demo data loading completed",
                 results
             });
         }
@@ -149,6 +145,77 @@ public class AdminController : ControllerBase
         {
             _logger.LogError(ex, "Error loading demo data");
             return StatusCode(500, new { error = "Failed to load demo data", details = ex.Message });
+        }
+    }
+
+    private async Task CreateSpecializedLayers()
+    {
+        try
+        {
+            // Group features by their layer property
+            var features = await _context.Features
+                .Where(f => f.Layer.Name == "Ressources en eau - Grand Est")
+                .ToListAsync();
+
+            var layerGroups = features.GroupBy(f =>
+            {
+                if (!string.IsNullOrEmpty(f.PropertiesJson))
+                {
+                    using var doc = JsonDocument.Parse(f.PropertiesJson);
+                    if (doc.RootElement.TryGetProperty("layer", out var layerProp))
+                    {
+                        return layerProp.GetString();
+                    }
+                }
+                return "Autres";
+            });
+
+            foreach (var group in layerGroups)
+            {
+                if (!string.IsNullOrEmpty(group.Key) && group.Key != "Autres")
+                {
+                    // Create a new layer for this category
+                    var newLayer = new Domain.Entities.Layer
+                    {
+                        Name = group.Key,
+                        Srid = 4326,
+                        GeometryType = "Geometry",
+                        CreatedUtc = DateTime.UtcNow,
+                        UpdatedUtc = DateTime.UtcNow,
+                        MetadataJson = JsonSerializer.Serialize(new
+                        {
+                            source = "Grand Est Water Resources",
+                            category = group.Key,
+                            importDate = DateTime.UtcNow
+                        })
+                    };
+
+                    _context.Layers.Add(newLayer);
+                    await _context.SaveChangesAsync();
+
+                    // Copy features to the new layer
+                    foreach (var feature in group)
+                    {
+                        var newFeature = new Domain.Entities.FeatureEntity
+                        {
+                            LayerId = newLayer.Id,
+                            Geometry = feature.Geometry,
+                            PropertiesJson = feature.PropertiesJson,
+                            ValidFromUtc = feature.ValidFromUtc,
+                            ValidToUtc = feature.ValidToUtc
+                        };
+                        _context.Features.Add(newFeature);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Created specialized layer '{LayerName}' with {Count} features",
+                        group.Key, group.Count());
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating specialized layers");
         }
     }
 

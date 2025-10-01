@@ -1,0 +1,742 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Rhin",
+        "type": "fleuve",
+        "category": "cours_eau",
+        "longueur_km": 185,
+        "debit_moyen_m3s": 1080,
+        "qualite_eau": "bonne",
+        "layer": "Cours d'eau",
+        "bassin": "Rhin-Meuse",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#0066CC"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [7.5885, 48.9660],
+          [7.7342, 48.5849],
+          [7.9090, 47.9163],
+          [8.2324, 47.5905]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Moselle",
+        "type": "riviere",
+        "category": "cours_eau",
+        "longueur_km": 314,
+        "debit_moyen_m3s": 145,
+        "qualite_eau": "moyenne",
+        "layer": "Cours d'eau",
+        "bassin": "Rhin-Meuse",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#0099FF"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [6.1786, 49.1196],
+          [6.3647, 48.6891],
+          [6.7369, 48.1138],
+          [7.3608, 47.8148]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Meuse",
+        "type": "fleuve",
+        "category": "cours_eau",
+        "longueur_km": 272,
+        "debit_moyen_m3s": 230,
+        "qualite_eau": "bonne",
+        "layer": "Cours d'eau",
+        "bassin": "Rhin-Meuse",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#0066CC"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [5.1657, 49.5695],
+          [5.3689, 49.2924],
+          [5.5264, 48.7901],
+          [5.8923, 48.2345]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Marne",
+        "type": "riviere",
+        "category": "cours_eau",
+        "longueur_km": 180,
+        "debit_moyen_m3s": 110,
+        "qualite_eau": "moyenne",
+        "layer": "Cours d'eau",
+        "bassin": "Seine-Normandie",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#0099FF"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [4.3634, 49.2739],
+          [4.7256, 48.9567],
+          [5.1367, 48.6389]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ill",
+        "type": "riviere",
+        "category": "cours_eau",
+        "longueur_km": 223,
+        "debit_moyen_m3s": 58,
+        "qualite_eau": "bonne",
+        "layer": "Cours d'eau",
+        "bassin": "Rhin-Meuse",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#0099FF"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [7.2384, 47.4523],
+          [7.4485, 48.2698],
+          [7.7528, 48.5825]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lac de Gérardmer",
+        "type": "lac_naturel",
+        "category": "plan_eau",
+        "surface_ha": 115,
+        "profondeur_max_m": 38,
+        "altitude_m": 660,
+        "qualite_eau": "excellente",
+        "layer": "Plans d'eau",
+        "bassin": "Rhin-Meuse",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#00CCFF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [6.8458, 48.0723],
+          [6.8789, 48.0723],
+          [6.8789, 48.0856],
+          [6.8458, 48.0856],
+          [6.8458, 48.0723]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lac du Der-Chantecoq",
+        "type": "lac_artificiel",
+        "category": "plan_eau",
+        "surface_ha": 4800,
+        "volume_millions_m3": 350,
+        "annee_creation": 1974,
+        "usage": "régulation_crues",
+        "qualite_eau": "bonne",
+        "layer": "Plans d'eau",
+        "bassin": "Seine-Normandie",
+        "validFrom": "1974-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#0099CC"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [4.7234, 48.5423],
+          [4.8123, 48.5423],
+          [4.8123, 48.6012],
+          [4.7234, 48.6012],
+          [4.7234, 48.5423]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lac de Pierre-Percée",
+        "type": "lac_artificiel",
+        "category": "plan_eau",
+        "surface_ha": 281,
+        "volume_millions_m3": 62,
+        "annee_creation": 1993,
+        "usage": "eau_potable",
+        "qualite_eau": "excellente",
+        "layer": "Plans d'eau",
+        "bassin": "Rhin-Meuse",
+        "validFrom": "1993-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#0099CC"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [6.9234, 48.4523],
+          [6.9567, 48.4523],
+          [6.9567, 48.4789],
+          [6.9234, 48.4789],
+          [6.9234, 48.4523]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Station Strasbourg - Rhin",
+        "type": "station_mesure",
+        "category": "surveillance",
+        "code_station": "A3670310",
+        "ph": 7.8,
+        "oxygene_dissous_mgl": 9.2,
+        "temperature_c": 12.5,
+        "nitrates_mgl": 15.3,
+        "phosphates_mgl": 0.08,
+        "qualite_globale": "bonne",
+        "layer": "Stations de mesure",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#00FF00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [7.7521, 48.5734]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Station Metz - Moselle",
+        "type": "station_mesure",
+        "category": "surveillance",
+        "code_station": "A7900310",
+        "ph": 7.5,
+        "oxygene_dissous_mgl": 8.5,
+        "temperature_c": 13.2,
+        "nitrates_mgl": 22.1,
+        "phosphates_mgl": 0.15,
+        "qualite_globale": "moyenne",
+        "layer": "Stations de mesure",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#FFFF00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6.1762, 49.1193]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Station Nancy - Meurthe",
+        "type": "station_mesure",
+        "category": "surveillance",
+        "code_station": "A6830310",
+        "ph": 7.6,
+        "oxygene_dissous_mgl": 8.8,
+        "temperature_c": 12.8,
+        "nitrates_mgl": 18.5,
+        "phosphates_mgl": 0.11,
+        "qualite_globale": "bonne",
+        "layer": "Stations de mesure",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#00FF00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6.1849, 48.6921]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Station Reims - Vesle",
+        "type": "station_mesure",
+        "category": "surveillance",
+        "code_station": "H6402010",
+        "ph": 7.9,
+        "oxygene_dissous_mgl": 9.5,
+        "temperature_c": 11.8,
+        "nitrates_mgl": 28.3,
+        "phosphates_mgl": 0.22,
+        "qualite_globale": "médiocre",
+        "layer": "Stations de mesure",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#FFA500"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [4.0317, 49.2583]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nappe d'Alsace",
+        "type": "nappe_phreatique",
+        "category": "eau_souterraine",
+        "surface_km2": 3200,
+        "volume_milliards_m3": 35,
+        "profondeur_moyenne_m": 15,
+        "vulnerabilite": "forte",
+        "usage_principal": "eau_potable",
+        "niveau_actuel": "normal",
+        "layer": "Eaux souterraines",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#CCE5FF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.2000, 47.5000],
+          [7.9000, 47.5000],
+          [7.9000, 48.8000],
+          [7.2000, 48.8000],
+          [7.2000, 47.5000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nappe de la craie champenoise",
+        "type": "nappe_captive",
+        "category": "eau_souterraine",
+        "surface_km2": 4500,
+        "profondeur_moyenne_m": 45,
+        "vulnerabilite": "moyenne",
+        "usage_principal": "agriculture",
+        "niveau_actuel": "bas",
+        "layer": "Eaux souterraines",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#E6F2FF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [3.8000, 48.5000],
+          [4.8000, 48.5000],
+          [4.8000, 49.3000],
+          [3.8000, 49.3000],
+          [3.8000, 48.5000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bassin versant de la Moselle",
+        "type": "bassin_versant",
+        "category": "hydrographie",
+        "surface_km2": 28300,
+        "population": 2400000,
+        "densite_hab_km2": 85,
+        "nb_stations_epuration": 450,
+        "layer": "Bassins versants",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#B3D9FF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [5.8000, 47.8000],
+          [7.4000, 47.8000],
+          [7.4000, 49.5000],
+          [5.8000, 49.5000],
+          [5.8000, 47.8000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bassin versant de la Meuse",
+        "type": "bassin_versant",
+        "category": "hydrographie",
+        "surface_km2": 10400,
+        "population": 890000,
+        "densite_hab_km2": 86,
+        "nb_stations_epuration": 180,
+        "layer": "Bassins versants",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#CCE5FF"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [4.5000, 48.0000],
+          [5.9000, 48.0000],
+          [5.9000, 49.8000],
+          [4.5000, 49.8000],
+          [4.5000, 48.0000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Strasbourg",
+        "type": "commune",
+        "category": "territoire",
+        "code_insee": "67482",
+        "population": 284677,
+        "surface_km2": 78.26,
+        "departement": "Bas-Rhin",
+        "region": "Grand Est",
+        "epci": "Eurométropole de Strasbourg",
+        "consommation_eau_m3_an": 18500000,
+        "nb_captages": 12,
+        "layer": "Communes",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#FF6B6B"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.6800, 48.5200],
+          [7.8500, 48.5200],
+          [7.8500, 48.6300],
+          [7.6800, 48.6300],
+          [7.6800, 48.5200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Metz",
+        "type": "commune",
+        "category": "territoire",
+        "code_insee": "57463",
+        "population": 116581,
+        "surface_km2": 41.94,
+        "departement": "Moselle",
+        "region": "Grand Est",
+        "epci": "Metz Métropole",
+        "consommation_eau_m3_an": 7800000,
+        "nb_captages": 8,
+        "layer": "Communes",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#FF6B6B"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [6.1200, 49.0800],
+          [6.2300, 49.0800],
+          [6.2300, 49.1500],
+          [6.1200, 49.1500],
+          [6.1200, 49.0800]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nancy",
+        "type": "commune",
+        "category": "territoire",
+        "code_insee": "54395",
+        "population": 104286,
+        "surface_km2": 15.01,
+        "departement": "Meurthe-et-Moselle",
+        "region": "Grand Est",
+        "epci": "Métropole du Grand Nancy",
+        "consommation_eau_m3_an": 6900000,
+        "nb_captages": 6,
+        "layer": "Communes",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#FF6B6B"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [6.1400, 48.6700],
+          [6.2200, 48.6700],
+          [6.2200, 48.7100],
+          [6.1400, 48.7100],
+          [6.1400, 48.6700]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Reims",
+        "type": "commune",
+        "category": "territoire",
+        "code_insee": "51454",
+        "population": 182211,
+        "surface_km2": 46.90,
+        "departement": "Marne",
+        "region": "Grand Est",
+        "epci": "Grand Reims",
+        "consommation_eau_m3_an": 11200000,
+        "nb_captages": 9,
+        "layer": "Communes",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#FF6B6B"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [3.9800, 49.2300],
+          [4.0800, 49.2300],
+          [4.0800, 49.2900],
+          [3.9800, 49.2900],
+          [3.9800, 49.2300]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mulhouse",
+        "type": "commune",
+        "category": "territoire",
+        "code_insee": "68224",
+        "population": 108312,
+        "surface_km2": 22.18,
+        "departement": "Haut-Rhin",
+        "region": "Grand Est",
+        "epci": "Mulhouse Alsace Agglomération",
+        "consommation_eau_m3_an": 7100000,
+        "nb_captages": 7,
+        "layer": "Communes",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#FF6B6B"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.3000, 47.7200],
+          [7.3800, 47.7200],
+          [7.3800, 47.7700],
+          [7.3000, 47.7700],
+          [7.3000, 47.7200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Barrage de Kruth-Wildenstein",
+        "type": "barrage",
+        "category": "infrastructure",
+        "hauteur_m": 36,
+        "longueur_m": 220,
+        "volume_retenue_millions_m3": 12,
+        "annee_construction": 1964,
+        "usage": "hydroelectricite",
+        "puissance_mw": 150,
+        "layer": "Infrastructures",
+        "validFrom": "1964-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#8B4513"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6.9667, 47.9500]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Station d'épuration de Strasbourg",
+        "type": "station_epuration",
+        "category": "infrastructure",
+        "capacite_eq_hab": 1000000,
+        "debit_nominal_m3j": 240000,
+        "type_traitement": "biologique_tertiaire",
+        "conformite": "conforme",
+        "rendement_pct": 96,
+        "layer": "Infrastructures",
+        "validFrom": "1990-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#808080"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [7.8123, 48.5234]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Captage de Houdelaincourt",
+        "type": "captage",
+        "category": "infrastructure",
+        "debit_autorise_m3j": 25000,
+        "profondeur_m": 120,
+        "perimetre_protection": "etabli",
+        "qualite_eau_brute": "bonne",
+        "traitement": "chloration",
+        "layer": "Infrastructures",
+        "validFrom": "1975-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#0000FF"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [5.5123, 48.5678]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zone humide de la Petite Camargue Alsacienne",
+        "type": "zone_humide",
+        "category": "milieu_naturel",
+        "surface_ha": 904,
+        "statut_protection": "Reserve Naturelle",
+        "biodiversite": "exceptionnelle",
+        "menaces": "fragmentation",
+        "layer": "Milieux naturels",
+        "validFrom": "1982-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#006400"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.5200, 47.5900],
+          [7.5800, 47.5900],
+          [7.5800, 47.6300],
+          [7.5200, 47.6300],
+          [7.5200, 47.5900]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tourbière de la Grande Pile",
+        "type": "zone_humide",
+        "category": "milieu_naturel",
+        "surface_ha": 25,
+        "statut_protection": "ZNIEFF Type 1",
+        "biodiversite": "remarquable",
+        "fonction": "regulation_hydrologique",
+        "layer": "Milieux naturels",
+        "validFrom": "1991-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#228B22"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [6.6700, 47.8900],
+          [6.6900, 47.8900],
+          [6.6900, 47.9000],
+          [6.6700, 47.9000],
+          [6.6700, 47.8900]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Source de la Loue",
+        "type": "source",
+        "category": "hydrographie",
+        "debit_moyen_ls": 3500,
+        "temperature_c": 9.5,
+        "mineralisation": "calcique",
+        "protection": "captage_prioritaire",
+        "layer": "Points d'eau",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#00BFFF"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [6.1234, 47.5678]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Puits de captage Mommenheim",
+        "type": "puits",
+        "category": "infrastructure",
+        "profondeur_m": 45,
+        "debit_m3h": 250,
+        "nappe": "Alsace",
+        "usage": "irrigation",
+        "layer": "Points d'eau",
+        "validFrom": "1998-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#4169E1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [7.6456, 48.7234]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zone de recharge de la nappe",
+        "type": "zone_infiltration",
+        "category": "hydrographie",
+        "surface_ha": 1250,
+        "taux_infiltration_mmh": 25,
+        "vulnerabilite": "tres_forte",
+        "occupation_sol": "agricole",
+        "layer": "Zones sensibles",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": null,
+        "color": "#FFE4B5"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.4000, 48.2000],
+          [7.6000, 48.2000],
+          [7.6000, 48.3500],
+          [7.4000, 48.3500],
+          [7.4000, 48.2000]
+        ]]
+      }
+    }
+  ]
+}
