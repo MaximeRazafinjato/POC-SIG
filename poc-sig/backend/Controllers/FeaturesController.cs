@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PocSig.Infrastructure;
 using PocSig.Domain.Entities;
 using NetTopologySuite.Geometries;
@@ -16,11 +17,13 @@ public class FeaturesController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly ILogger<FeaturesController> _logger;
+    private readonly IMemoryCache _cache;
 
-    public FeaturesController(AppDbContext context, ILogger<FeaturesController> logger)
+    public FeaturesController(AppDbContext context, ILogger<FeaturesController> logger, IMemoryCache cache)
     {
         _context = context;
         _logger = logger;
+        _cache = cache;
     }
 
     [HttpGet("{layerId}")]
