@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { fixObjectEncoding } from '../utils/encoding';
 
 interface Layer {
   id: number;
@@ -59,12 +60,16 @@ const api = axios.create({
 export const layersApi = {
   getAll: async (): Promise<Layer[]> => {
     const response = await api.get<Layer[]>('/layers');
-    return response.data;
+    // Fix encoding issues in layer names and metadata
+    const fixedData = fixObjectEncoding(response.data);
+    return fixedData;
   },
 
   getById: async (id: number): Promise<Layer> => {
     const response = await api.get<Layer>(`/layers/${id}`);
-    return response.data;
+    // Fix encoding issues in layer data
+    const fixedData = fixObjectEncoding(response.data);
+    return fixedData;
   },
 
   importGeoJson: async (layerId: number, fileName?: string): Promise<void> => {
@@ -88,7 +93,9 @@ export const clusterApi = {
     params.append('clusterRadius', '50');
 
     const response = await api.get(`/cluster/${layerId}?${params.toString()}`);
-    return response.data;
+    // Fix encoding issues in cluster data
+    const fixedData = fixObjectEncoding(response.data);
+    return fixedData;
   }
 };
 
@@ -105,7 +112,10 @@ export const featuresApi = {
     if (filters.pageSize) params.append('pageSize', filters.pageSize.toString());
 
     const response = await api.get<PaginatedResponse<Feature>>(`/features/${layerId}?${params.toString()}`);
-    return response.data;
+
+    // Fix encoding issues in the response data
+    const fixedData = fixObjectEncoding(response.data);
+    return fixedData;
   },
 
   getStats: async (layerId: number, filters: FilterParams = {}): Promise<Stats> => {

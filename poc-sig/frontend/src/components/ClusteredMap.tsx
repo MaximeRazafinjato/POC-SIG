@@ -3,6 +3,7 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import type { Feature } from '../types/api';
+import { fixObjectEncoding } from '../utils/encoding';
 
 // Custom cluster icon
 const createClusterCustomIcon = (cluster: any) => {
@@ -81,7 +82,8 @@ export const ClusteredMap: React.FC<ClusteredMapProps> = ({
       disableClusteringAtZoom={15}
     >
       {markers.map((marker, index) => {
-        const properties = marker.feature.properties || {};
+        const rawProperties = marker.feature.properties || {};
+        const properties = fixObjectEncoding(rawProperties);
         const color = properties.color || '#4169E1';
 
         return (
