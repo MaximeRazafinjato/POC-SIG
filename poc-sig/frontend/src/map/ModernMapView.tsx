@@ -37,6 +37,7 @@ import {
   exportApi,
   downloadFile,
   api,
+  clusterApi,
 } from "../api/client";
 import { SelectionPanel } from "../components/SelectionPanel";
 import type { Layer, Feature, FilterParams, Stats } from "../types/api";
@@ -47,7 +48,7 @@ export const ModernMapView: React.FC = () => {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [filters, setFilters] = useState<FilterParams>({
     operation: "intersects",
-    pageSize: 500,
+    pageSize: 2000,  // Load all data, optimize rendering instead
   });
   const [stats, setStats] = useState<Stats | null>(null);
   const [bbox, setBbox] = useState<LatLngBounds | null>(null);
@@ -100,7 +101,7 @@ export const ModernMapView: React.FC = () => {
       for (const layer of layersData) {
         try {
           const response = await featuresApi.getFeatures(layer.id, {
-            pageSize: 1000,
+            pageSize: 2000,  // Load all features
           });
           const layerFeatures = response.features || response.items || [];
           console.log(
@@ -716,10 +717,6 @@ export const ModernMapView: React.FC = () => {
               <div className="stat-value">{stats.filteredFeatures}</div>
               <div className="stat-label">Filtrées</div>
             </div>
-            <div className="stat-card">
-              <div className="stat-value">{stats.executionTimeMs}</div>
-              <div className="stat-label">ms</div>
-            </div>
           </div>
         )}
 
@@ -936,8 +933,8 @@ export const ModernMapView: React.FC = () => {
       {/* Map */}
       <div style={{ flex: 1, position: "relative" }}>
         <MapContainer
-          center={[48.8566, 2.3522]}
-          zoom={13}
+          center={[48.6, 6.2]}
+          zoom={7}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
@@ -1002,39 +999,53 @@ export const ModernMapView: React.FC = () => {
                           font-size: 14px;
                           color: #636e72;
                         ">
-                          <div><strong>Couche:</strong> ${
-                            selectedLayer?.name || "N/A"
-                          }</div>
-                          <div><strong>Type:</strong> ${
-                            props.type || "N/A"
-                          }</div>
                           ${
-                            props.height
-                              ? `<div><strong>Hauteur:</strong> ${props.height}m</div>`
+                            props.layer
+                              ? `<div><strong>Catégorie:</strong> ${props.layer}</div>`
+                              : selectedLayer?.name
+                              ? `<div><strong>Couche:</strong> ${selectedLayer.name}</div>`
                               : ""
                           }
                           ${
-                            props.surface
-                              ? `<div><strong>Surface:</strong> ${props.surface} ha</div>`
+                            props.type
+                              ? `<div><strong>Type:</strong> ${props.type.replace(/_/g, ' ')}</div>`
                               : ""
                           }
                           ${
-                            props.year
-                              ? `<div><strong>Année:</strong> ${props.year}</div>`
+                            props.commune
+                              ? `<div><strong>Commune:</strong> ${props.commune}</div>`
                               : ""
                           }
                           ${
-                            props.validFromUtc
-                              ? `<div><strong>Depuis:</strong> ${formatDate(
-                                  props.validFromUtc
-                                )}</div>`
+                            props.departement
+                              ? `<div><strong>Département:</strong> ${props.departement}</div>`
                               : ""
                           }
                           ${
-                            props.validToUtc
-                              ? `<div><strong>Jusqu'à:</strong> ${formatDate(
-                                  props.validToUtc
-                                )}</div>`
+                            props.surface || props.surface_ha
+                              ? `<div><strong>Surface:</strong> ${props.surface || props.surface_ha} ha</div>`
+                              : ""
+                          }
+                          ${
+                            props.debit_moyen_m3s
+                              ? `<div><strong>Débit moyen:</strong> ${props.debit_moyen_m3s} m³/s</div>`
+                              : ""
+                          }
+                          ${
+                            props.qualite_eau
+                              ? `<div><strong>Qualité:</strong> ${props.qualite_eau}</div>`
+                              : ""
+                          }
+                          ${
+                            props.profondeur
+                              ? `<div><strong>Profondeur:</strong> ${props.profondeur} m</div>`
+                              : ""
+                          }
+                          ${
+                            props.date_debut
+                              ? `<div><strong>Depuis le:</strong> ${formatDate(props.date_debut)}</div>`
+                              : props.validFromUtc
+                              ? `<div><strong>Depuis le:</strong> ${formatDate(props.validFromUtc)}</div>`
                               : ""
                           }
                         </div>

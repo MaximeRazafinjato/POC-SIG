@@ -76,6 +76,22 @@ export const layersApi = {
   },
 };
 
+export const clusterApi = {
+  getClustersByLayer: async (
+    layerId: number,
+    zoom: number,
+    bbox?: string
+  ): Promise<any> => {
+    const params = new URLSearchParams();
+    if (zoom !== undefined) params.append('zoom', zoom.toString());
+    if (bbox) params.append('bbox', bbox);
+    params.append('clusterRadius', '50');
+
+    const response = await api.get(`/cluster/${layerId}?${params.toString()}`);
+    return response.data;
+  }
+};
+
 export const featuresApi = {
   getFeatures: async (layerId: number, filters: FilterParams = {}): Promise<PaginatedResponse<Feature>> => {
     const params = new URLSearchParams();
