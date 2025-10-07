@@ -12,6 +12,9 @@ public class AppDbContext : DbContext
 
     public DbSet<Layer> Layers => Set<Layer>();
     public DbSet<FeatureEntity> Features => Set<FeatureEntity>();
+    public DbSet<Commune> Communes => Set<Commune>();
+    public DbSet<EPCI> EPCIs => Set<EPCI>();
+    public DbSet<Departement> Departements => Set<Departement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

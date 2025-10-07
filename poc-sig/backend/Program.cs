@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PocSig.Infrastructure;
 using PocSig.Controllers;
 using PocSig.ETL;
+using PocSig.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddScoped<ImportGeoJsonCommand>();
+builder.Services.AddScoped<TerritorialDataSeeder>();
+
+// Add HttpClient for HubEau API calls
+builder.Services.AddHttpClient<HubEauService>(client =>
+{
+    client.BaseAddress = new Uri("https://hubeau.eaufrance.fr/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -38,6 +48,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add in-memory caching
+builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

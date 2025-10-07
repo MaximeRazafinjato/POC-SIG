@@ -1,14 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
   GeoJSON,
   Rectangle,
   useMapEvents,
+  Marker,
+  Popup,
 } from "react-leaflet";
 import { LatLngBounds, LatLng } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../styles/modern.css";
+import "../styles/clusters.css";
+import { ClusteredMap } from "../components/ClusteredMap";
 import {
   Map,
   Layers,
@@ -37,9 +41,12 @@ import {
   exportApi,
   downloadFile,
   api,
+  clusterApi,
 } from "../api/client";
 import { SelectionPanel } from "../components/SelectionPanel";
+import { SearchAutocomplete } from "../components/SearchAutocomplete";
 import type { Layer, Feature, FilterParams, Stats } from "../types/api";
+import type { SearchResult } from "../types/search";
 
 export const ModernMapView: React.FC = () => {
   const [layers, setLayers] = useState<Layer[]>([]);
@@ -47,7 +54,7 @@ export const ModernMapView: React.FC = () => {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [filters, setFilters] = useState<FilterParams>({
     operation: "intersects",
-    pageSize: 500,
+    pageSize: 2000,  // Load all data, optimize rendering instead
   });
   const [stats, setStats] = useState<Stats | null>(null);
   const [bbox, setBbox] = useState<LatLngBounds | null>(null);
@@ -57,6 +64,8 @@ export const ModernMapView: React.FC = () => {
   const [showFilters, setShowFilters] = useState(true);
   const [selectedFeatures, setSelectedFeatures] = useState<Feature[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [searchMarker, setSearchMarker] = useState<{ position: [number, number]; label: string } | null>(null);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
     loadLayers();
@@ -100,7 +109,7 @@ export const ModernMapView: React.FC = () => {
       for (const layer of layersData) {
         try {
           const response = await featuresApi.getFeatures(layer.id, {
-            pageSize: 1000,
+            pageSize: 2000,  // Load all features
           });
           const layerFeatures = response.features || response.items || [];
           console.log(
@@ -672,6 +681,38 @@ export const ModernMapView: React.FC = () => {
     return null;
   };
 
+  const MapController = () => {
+    const map = useMapEvents({});
+    React.useEffect(() => {
+      mapRef.current = map;
+    }, [map]);
+    return null;
+  };
+
+  const handleSearchSelect = (result: SearchResult) => {
+    if (result.latitude && result.longitude) {
+      // Zoom sur la position sélectionnée
+      const map = mapRef.current;
+      if (map) {
+        map.setView([result.latitude, result.longitude], 13, {
+          animate: true,
+          duration: 1
+        });
+      }
+
+      // Définir le marqueur de recherche
+      setSearchMarker({
+        position: [result.latitude, result.longitude],
+        label: result.label
+      });
+
+      // Supprimer le marqueur après 5 secondes
+      setTimeout(() => {
+        setSearchMarker(null);
+      }, 5000);
+    }
+  };
+
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("fr-FR");
   };
@@ -705,6 +746,11 @@ export const ModernMapView: React.FC = () => {
           <div className="subtitle">Système d'Information Géographique</div>
         </div>
 
+        {/* Search Autocomplete */}
+        <div className="card fade-in" style={{ marginBottom: "1rem", position: "relative", zIndex: 9999, overflow: "visible" }}>
+          <SearchAutocomplete onSelect={handleSearchSelect} />
+        </div>
+
         {/* Stats Grid */}
         {stats && (
           <div className="stats-grid fade-in">
@@ -715,10 +761,6 @@ export const ModernMapView: React.FC = () => {
             <div className="stat-card">
               <div className="stat-value">{stats.filteredFeatures}</div>
               <div className="stat-label">Filtrées</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{stats.executionTimeMs}</div>
-              <div className="stat-label">ms</div>
             </div>
           </div>
         )}
@@ -936,8 +978,8 @@ export const ModernMapView: React.FC = () => {
       {/* Map */}
       <div style={{ flex: 1, position: "relative" }}>
         <MapContainer
-          center={[48.8566, 2.3522]}
-          zoom={13}
+          center={[48.6, 6.2]}
+          zoom={7}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
@@ -950,6 +992,16 @@ export const ModernMapView: React.FC = () => {
           />
 
           <BboxDrawer />
+          <MapController />
+
+          {/* Search Marker */}
+          {searchMarker && (
+            <Marker position={searchMarker.position}>
+              <Popup>
+                <strong>{searchMarker.label}</strong>
+              </Popup>
+            </Marker>
+          )}
 
           {/* Bbox Rectangle */}
           {bbox && (
@@ -964,9 +1016,20 @@ export const ModernMapView: React.FC = () => {
             />
           )}
 
-          {/* Features */}
+          {/* Optimized Feature Rendering */}
+          {/* Render clustered points for performance */}
+          {features && features.length > 0 && (
+            <ClusteredMap
+              features={features}
+              onFeatureClick={(feature) => {
+                console.log("Feature clicked:", feature);
+              }}
+            />
+          )}
+
+          {/* Render non-point geometries separately */}
           {features &&
-            features.map((feature, index) => {
+            features.filter(f => f.geometry?.type !== 'Point').map((feature, index) => {
               try {
                 const properties = feature.properties || {};
 
@@ -1002,39 +1065,53 @@ export const ModernMapView: React.FC = () => {
                           font-size: 14px;
                           color: #636e72;
                         ">
-                          <div><strong>Couche:</strong> ${
-                            selectedLayer?.name || "N/A"
-                          }</div>
-                          <div><strong>Type:</strong> ${
-                            props.type || "N/A"
-                          }</div>
                           ${
-                            props.height
-                              ? `<div><strong>Hauteur:</strong> ${props.height}m</div>`
+                            props.layer
+                              ? `<div><strong>Catégorie:</strong> ${props.layer}</div>`
+                              : selectedLayer?.name
+                              ? `<div><strong>Couche:</strong> ${selectedLayer.name}</div>`
                               : ""
                           }
                           ${
-                            props.surface
-                              ? `<div><strong>Surface:</strong> ${props.surface} ha</div>`
+                            props.type
+                              ? `<div><strong>Type:</strong> ${props.type.replace(/_/g, ' ')}</div>`
                               : ""
                           }
                           ${
-                            props.year
-                              ? `<div><strong>Année:</strong> ${props.year}</div>`
+                            props.commune
+                              ? `<div><strong>Commune:</strong> ${props.commune}</div>`
                               : ""
                           }
                           ${
-                            props.validFromUtc
-                              ? `<div><strong>Depuis:</strong> ${formatDate(
-                                  props.validFromUtc
-                                )}</div>`
+                            props.departement
+                              ? `<div><strong>Département:</strong> ${props.departement}</div>`
                               : ""
                           }
                           ${
-                            props.validToUtc
-                              ? `<div><strong>Jusqu'à:</strong> ${formatDate(
-                                  props.validToUtc
-                                )}</div>`
+                            props.surface || props.surface_ha
+                              ? `<div><strong>Surface:</strong> ${props.surface || props.surface_ha} ha</div>`
+                              : ""
+                          }
+                          ${
+                            props.debit_moyen_m3s
+                              ? `<div><strong>Débit moyen:</strong> ${props.debit_moyen_m3s} m³/s</div>`
+                              : ""
+                          }
+                          ${
+                            props.qualite_eau
+                              ? `<div><strong>Qualité:</strong> ${props.qualite_eau}</div>`
+                              : ""
+                          }
+                          ${
+                            props.profondeur
+                              ? `<div><strong>Profondeur:</strong> ${props.profondeur} m</div>`
+                              : ""
+                          }
+                          ${
+                            props.date_debut
+                              ? `<div><strong>Depuis le:</strong> ${formatDate(props.date_debut)}</div>`
+                              : props.validFromUtc
+                              ? `<div><strong>Depuis le:</strong> ${formatDate(props.validFromUtc)}</div>`
                               : ""
                           }
                         </div>

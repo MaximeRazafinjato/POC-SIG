@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { fixObjectEncoding } from '../utils/encoding';
+import type { SearchResult, SearchResultResponse } from '../types/search';
 
 interface Layer {
   id: number;
@@ -59,12 +61,16 @@ const api = axios.create({
 export const layersApi = {
   getAll: async (): Promise<Layer[]> => {
     const response = await api.get<Layer[]>('/layers');
-    return response.data;
+    // Fix encoding issues in layer names and metadata
+    const fixedData = fixObjectEncoding(response.data);
+    return fixedData;
   },
 
   getById: async (id: number): Promise<Layer> => {
     const response = await api.get<Layer>(`/layers/${id}`);
-    return response.data;
+    // Fix encoding issues in layer data
+    const fixedData = fixObjectEncoding(response.data);
+    return fixedData;
   },
 
   importGeoJson: async (layerId: number, fileName?: string): Promise<void> => {
@@ -74,6 +80,24 @@ export const layersApi = {
     }
     await api.post(url);
   },
+};
+
+export const clusterApi = {
+  getClustersByLayer: async (
+    layerId: number,
+    zoom: number,
+    bbox?: string
+  ): Promise<any> => {
+    const params = new URLSearchParams();
+    if (zoom !== undefined) params.append('zoom', zoom.toString());
+    if (bbox) params.append('bbox', bbox);
+    params.append('clusterRadius', '50');
+
+    const response = await api.get(`/cluster/${layerId}?${params.toString()}`);
+    // Fix encoding issues in cluster data
+    const fixedData = fixObjectEncoding(response.data);
+    return fixedData;
+  }
 };
 
 export const featuresApi = {
@@ -89,7 +113,10 @@ export const featuresApi = {
     if (filters.pageSize) params.append('pageSize', filters.pageSize.toString());
 
     const response = await api.get<PaginatedResponse<Feature>>(`/features/${layerId}?${params.toString()}`);
-    return response.data;
+
+    // Fix encoding issues in the response data
+    const fixedData = fixObjectEncoding(response.data);
+    return fixedData;
   },
 
   getStats: async (layerId: number, filters: FilterParams = {}): Promise<Stats> => {
@@ -148,6 +175,25 @@ export const exportApi = {
       filename,
     };
   },
+};
+
+export const searchApi = {
+  autocomplete: async (query: string, maxResults = 10): Promise<SearchResult[]> => {
+    try {
+      const response = await api.get<SearchResultResponse>('/search/autocomplete', {
+        params: { q: query, maxResults }
+      });
+
+      if (response.data.isSuccess && response.data.value) {
+        return response.data.value;
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Search autocomplete error:', error);
+      return [];
+    }
+  }
 };
 
 export const downloadFile = (blob: Blob, filename: string): void => {

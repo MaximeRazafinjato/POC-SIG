@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PocSig.Infrastructure;
+using PocSig.Services;
+using System.Text.Json;
 
 namespace PocSig.Controllers;
 
@@ -11,12 +13,21 @@ public class AdminController : ControllerBase
     private readonly AppDbContext _context;
     private readonly ILogger<AdminController> _logger;
     private readonly ILoggerFactory _loggerFactory;
+    private readonly HubEauService _hubEauService;
+    private readonly TerritorialDataSeeder _territorialDataSeeder;
 
-    public AdminController(AppDbContext context, ILogger<AdminController> logger, ILoggerFactory loggerFactory)
+    public AdminController(
+        AppDbContext context,
+        ILogger<AdminController> logger,
+        ILoggerFactory loggerFactory,
+        HubEauService hubEauService,
+        TerritorialDataSeeder territorialDataSeeder)
     {
         _context = context;
         _logger = logger;
         _loggerFactory = loggerFactory;
+        _hubEauService = hubEauService;
+        _territorialDataSeeder = territorialDataSeeder;
     }
 
     [HttpPost("clean-database")]
@@ -93,55 +104,50 @@ public class AdminController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Loading all demo data...");
+            _logger.LogInformation("Loading Grand Est water resources demo data...");
 
-            var demoFiles = new[]
-            {
-                ("paris_monuments.geojson", "Monuments de Paris"),
-                ("paris_parks.geojson", "Parcs et Jardins"),
-                ("paris_metro.geojson", "Lignes de Métro"),
-                ("paris_museums.geojson", "Musées")
-            };
-
+            // Use the new comprehensive Grand Est water resources data file with 500+ real data points
+            var fileName = "grand_est_eau_complet.geojson";
             var results = new List<object>();
 
-            foreach (var (fileName, layerName) in demoFiles)
+            try
             {
-                try
-                {
-                    // Import the file directly with automatic layer creation
-                    var importLogger = _loggerFactory.CreateLogger<PocSig.ETL.ImportGeoJsonCommand>();
-                    var importCommand = new PocSig.ETL.ImportGeoJsonCommand(_context, importLogger);
-                    var result = await importCommand.ExecuteAsync(null, layerName, fileName);
+                // Import the comprehensive Grand Est water data file
+                var importLogger = _loggerFactory.CreateLogger<PocSig.ETL.ImportGeoJsonCommand>();
+                var importCommand = new PocSig.ETL.ImportGeoJsonCommand(_context, importLogger);
 
-                    results.Add(new
-                    {
-                        fileName,
-                        layerName,
-                        success = true,
-                        message = result
-                    });
+                // Import all features into a single layer
+                var result = await importCommand.ExecuteAsync(null, "Ressources en eau - Grand Est", fileName);
 
-                    _logger.LogInformation("Successfully imported {FileName} into layer '{LayerName}'",
-                        fileName, layerName);
-                }
-                catch (Exception ex)
+                results.Add(new
                 {
-                    _logger.LogError(ex, "Failed to import {FileName}", fileName);
-                    results.Add(new
-                    {
-                        fileName,
-                        layerName,
-                        success = false,
-                        error = ex.Message
-                    });
-                }
+                    fileName,
+                    layerName = "Ressources en eau - Grand Est",
+                    success = true,
+                    message = result
+                });
+
+                _logger.LogInformation("Successfully imported {FileName} with Grand Est water resources data", fileName);
+
+                // Create additional specialized layers from the imported data
+                await CreateSpecializedLayers();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to import {FileName}", fileName);
+                results.Add(new
+                {
+                    fileName,
+                    layerName = "Ressources en eau - Grand Est",
+                    success = false,
+                    error = ex.Message
+                });
             }
 
             return Ok(new
             {
                 success = true,
-                message = "Demo data loading completed",
+                message = "Grand Est water resources demo data loading completed",
                 results
             });
         }
@@ -149,6 +155,77 @@ public class AdminController : ControllerBase
         {
             _logger.LogError(ex, "Error loading demo data");
             return StatusCode(500, new { error = "Failed to load demo data", details = ex.Message });
+        }
+    }
+
+    private async Task CreateSpecializedLayers()
+    {
+        try
+        {
+            // Group features by their layer property
+            var features = await _context.Features
+                .Where(f => f.Layer.Name == "Ressources en eau - Grand Est")
+                .ToListAsync();
+
+            var layerGroups = features.GroupBy(f =>
+            {
+                if (!string.IsNullOrEmpty(f.PropertiesJson))
+                {
+                    using var doc = JsonDocument.Parse(f.PropertiesJson);
+                    if (doc.RootElement.TryGetProperty("layer", out var layerProp))
+                    {
+                        return layerProp.GetString();
+                    }
+                }
+                return "Autres";
+            });
+
+            foreach (var group in layerGroups)
+            {
+                if (!string.IsNullOrEmpty(group.Key) && group.Key != "Autres")
+                {
+                    // Create a new layer for this category
+                    var newLayer = new Domain.Entities.Layer
+                    {
+                        Name = group.Key,
+                        Srid = 4326,
+                        GeometryType = "Geometry",
+                        CreatedUtc = DateTime.UtcNow,
+                        UpdatedUtc = DateTime.UtcNow,
+                        MetadataJson = JsonSerializer.Serialize(new
+                        {
+                            source = "Grand Est Water Resources",
+                            category = group.Key,
+                            importDate = DateTime.UtcNow
+                        })
+                    };
+
+                    _context.Layers.Add(newLayer);
+                    await _context.SaveChangesAsync();
+
+                    // Copy features to the new layer
+                    foreach (var feature in group)
+                    {
+                        var newFeature = new Domain.Entities.FeatureEntity
+                        {
+                            LayerId = newLayer.Id,
+                            Geometry = feature.Geometry,
+                            PropertiesJson = feature.PropertiesJson,
+                            ValidFromUtc = feature.ValidFromUtc,
+                            ValidToUtc = feature.ValidToUtc
+                        };
+                        _context.Features.Add(newFeature);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Created specialized layer '{LayerName}' with {Count} features",
+                        group.Key, group.Count());
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating specialized layers");
         }
     }
 
@@ -172,6 +249,293 @@ public class AdminController : ControllerBase
         {
             _logger.LogError(ex, "Error renaming default layer");
             return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("load-hubeau-data")]
+    public async Task<IActionResult> LoadHubEauData()
+    {
+        try
+        {
+            _logger.LogInformation("Fetching real water data from Hub'Eau APIs...");
+
+            // First, ensure we have a main layer for all Hub'Eau data
+            var mainLayer = await _context.Layers.FirstOrDefaultAsync(l => l.Name == "Hub'Eau - Grand Est");
+            if (mainLayer == null)
+            {
+                mainLayer = new Domain.Entities.Layer
+                {
+                    Name = "Hub'Eau - Grand Est",
+                    Srid = 4326,
+                    GeometryType = "Geometry",
+                    CreatedUtc = DateTime.UtcNow,
+                    UpdatedUtc = DateTime.UtcNow,
+                    MetadataJson = JsonSerializer.Serialize(new
+                    {
+                        source = "Hub'Eau API",
+                        description = "Données temps réel des ressources en eau du Grand Est",
+                        lastUpdate = DateTime.UtcNow,
+                        api = "https://hubeau.eaufrance.fr"
+                    })
+                };
+                _context.Layers.Add(mainLayer);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Clear existing features for this layer to refresh with new data
+                var existingFeatures = _context.Features.Where(f => f.LayerId == mainLayer.Id);
+                _context.Features.RemoveRange(existingFeatures);
+                await _context.SaveChangesAsync();
+            }
+
+            // Fetch real data from Hub'Eau APIs
+            var features = await _hubEauService.GetGrandEstWaterDataAsync();
+            _logger.LogInformation("Fetched {Count} features from Hub'Eau APIs", features.Count);
+
+            // Save features to database
+            foreach (var feature in features)
+            {
+                var entity = new Domain.Entities.FeatureEntity
+                {
+                    LayerId = mainLayer.Id,
+                    Geometry = feature.Geometry,
+                    PropertiesJson = feature.PropertiesJson,
+                    ValidFromUtc = feature.ValidFromUtc,
+                    ValidToUtc = feature.ValidToUtc
+                };
+                _context.Features.Add(entity);
+            }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Successfully saved {Count} features to database", features.Count);
+
+            // Create specialized layers from the imported data
+            await CreateSpecializedLayersFromHubEau(mainLayer.Id);
+
+            // Get statistics
+            var stats = await _context.Layers
+                .Where(l => l.Name.Contains("Hub'Eau") || l.Name.Contains("Piézomètres") ||
+                            l.Name.Contains("Qualité") || l.Name.Contains("Hydrométrie"))
+                .Select(l => new
+                {
+                    l.Id,
+                    l.Name,
+                    FeatureCount = _context.Features.Count(f => f.LayerId == l.Id)
+                })
+                .ToListAsync();
+
+            return Ok(new
+            {
+                success = true,
+                message = $"Successfully loaded {features.Count} features from Hub'Eau APIs",
+                totalFeatures = features.Count,
+                layers = stats,
+                source = "Hub'Eau API - Temps réel"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading Hub'Eau data");
+            return StatusCode(500, new { error = "Failed to load Hub'Eau data", details = ex.Message });
+        }
+    }
+
+    private async Task CreateSpecializedLayersFromHubEau(int mainLayerId)
+    {
+        try
+        {
+            // Group features by their layer property
+            var features = await _context.Features
+                .Where(f => f.LayerId == mainLayerId)
+                .ToListAsync();
+
+            var layerGroups = features.GroupBy(f =>
+            {
+                if (!string.IsNullOrEmpty(f.PropertiesJson))
+                {
+                    using var doc = JsonDocument.Parse(f.PropertiesJson);
+                    if (doc.RootElement.TryGetProperty("layer", out var layerProp))
+                    {
+                        return layerProp.GetString();
+                    }
+                }
+                return null;
+            });
+
+            foreach (var group in layerGroups.Where(g => !string.IsNullOrEmpty(g.Key)))
+            {
+                // Check if layer already exists
+                var existingLayer = await _context.Layers.FirstOrDefaultAsync(l => l.Name == $"Hub'Eau - {group.Key}");
+
+                if (existingLayer == null)
+                {
+                    // Create a new layer for this category
+                    var newLayer = new Domain.Entities.Layer
+                    {
+                        Name = $"Hub'Eau - {group.Key}",
+                        Srid = 4326,
+                        GeometryType = "Point",
+                        CreatedUtc = DateTime.UtcNow,
+                        UpdatedUtc = DateTime.UtcNow,
+                        MetadataJson = JsonSerializer.Serialize(new
+                        {
+                            source = "Hub'Eau API",
+                            category = group.Key,
+                            importDate = DateTime.UtcNow
+                        })
+                    };
+
+                    _context.Layers.Add(newLayer);
+                    await _context.SaveChangesAsync();
+
+                    // Copy features to the new layer
+                    foreach (var feature in group)
+                    {
+                        var newFeature = new Domain.Entities.FeatureEntity
+                        {
+                            LayerId = newLayer.Id,
+                            Geometry = feature.Geometry,
+                            PropertiesJson = feature.PropertiesJson,
+                            ValidFromUtc = feature.ValidFromUtc,
+                            ValidToUtc = feature.ValidToUtc
+                        };
+                        _context.Features.Add(newFeature);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Created specialized layer '{LayerName}' with {Count} features",
+                        newLayer.Name, group.Count());
+                }
+                else
+                {
+                    // Update existing layer - clear old features and add new ones
+                    var oldFeatures = _context.Features.Where(f => f.LayerId == existingLayer.Id);
+                    _context.Features.RemoveRange(oldFeatures);
+
+                    foreach (var feature in group)
+                    {
+                        var newFeature = new Domain.Entities.FeatureEntity
+                        {
+                            LayerId = existingLayer.Id,
+                            Geometry = feature.Geometry,
+                            PropertiesJson = feature.PropertiesJson,
+                            ValidFromUtc = feature.ValidFromUtc,
+                            ValidToUtc = feature.ValidToUtc
+                        };
+                        _context.Features.Add(newFeature);
+                    }
+
+                    existingLayer.UpdatedUtc = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Updated specialized layer '{LayerName}' with {Count} features",
+                        existingLayer.Name, group.Count());
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating specialized layers from Hub'Eau data");
+        }
+    }
+
+    [HttpPost("load-territorial-data")]
+    public async Task<IActionResult> LoadTerritorialData()
+    {
+        try
+        {
+            _logger.LogInformation("Loading territorial data for Grand Est region...");
+
+            // Check if data already exists
+            var existingDepartements = await _context.Departements.CountAsync();
+            var existingCommunes = await _context.Communes.CountAsync();
+            var existingEPCIs = await _context.EPCIs.CountAsync();
+
+            if (existingDepartements > 0 || existingCommunes > 0 || existingEPCIs > 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Territorial data already exists. Use clean-territorial-data endpoint first if you want to reload.",
+                    existingData = new
+                    {
+                        departements = existingDepartements,
+                        communes = existingCommunes,
+                        epcis = existingEPCIs
+                    }
+                });
+            }
+
+            // Seed territorial data
+            var (departementsCount, communesCount, epcisCount) = await _territorialDataSeeder.SeedGrandEstTerritorialDataAsync();
+
+            return Ok(new
+            {
+                success = true,
+                message = "Territorial data loaded successfully for Grand Est region",
+                data = new
+                {
+                    departements = departementsCount,
+                    communes = communesCount,
+                    epcis = epcisCount
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading territorial data");
+            return StatusCode(500, new { error = "Failed to load territorial data", details = ex.Message });
+        }
+    }
+
+    [HttpPost("clean-territorial-data")]
+    public async Task<IActionResult> CleanTerritorialData()
+    {
+        try
+        {
+            _logger.LogWarning("Cleaning territorial data...");
+
+            var communesCount = await _context.Communes.CountAsync();
+            var epcisCount = await _context.EPCIs.CountAsync();
+            var departementsCount = await _context.Departements.CountAsync();
+
+            _context.Communes.RemoveRange(_context.Communes);
+            _context.EPCIs.RemoveRange(_context.EPCIs);
+            _context.Departements.RemoveRange(_context.Departements);
+
+            await _context.SaveChangesAsync();
+
+            // Reset identity columns
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Communes', RESEED, 0)");
+                await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('EPCIs', RESEED, 0)");
+                await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Departements', RESEED, 0)");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Could not reset identity columns for territorial data");
+            }
+
+            _logger.LogInformation("Territorial data cleaned successfully. Deleted {CommunesCount} communes, {EpcisCount} EPCI, {DepartementsCount} départements",
+                communesCount, epcisCount, departementsCount);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Territorial data cleaned successfully",
+                deleted = new
+                {
+                    communes = communesCount,
+                    epcis = epcisCount,
+                    departements = departementsCount
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error cleaning territorial data");
+            return StatusCode(500, new { error = "Failed to clean territorial data", details = ex.Message });
         }
     }
 }

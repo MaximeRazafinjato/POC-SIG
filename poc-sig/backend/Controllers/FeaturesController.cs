@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PocSig.Infrastructure;
 using PocSig.Domain.Entities;
 using NetTopologySuite.Geometries;
@@ -16,11 +17,13 @@ public class FeaturesController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly ILogger<FeaturesController> _logger;
+    private readonly IMemoryCache _cache;
 
-    public FeaturesController(AppDbContext context, ILogger<FeaturesController> logger)
+    public FeaturesController(AppDbContext context, ILogger<FeaturesController> logger, IMemoryCache cache)
     {
         _context = context;
         _logger = logger;
+        _cache = cache;
     }
 
     [HttpGet("{layerId}")]
@@ -35,6 +38,17 @@ public class FeaturesController : ControllerBase
         [FromQuery] int pageSize = 100)
     {
         var stopwatch = Stopwatch.StartNew();
+
+        // Create cache key based on all parameters
+        var cacheKey = $"features_{layerId}_{bbox}_{operation}_{bufferMeters}_{validFrom}_{validTo}_{page}_{pageSize}";
+
+        // Try to get from cache first
+        if (_cache.TryGetValue(cacheKey, out object? cachedResult))
+        {
+            _logger.LogInformation("Returning cached features for layer {LayerId} (Cache hit in {ElapsedMilliseconds}ms)",
+                layerId, stopwatch.ElapsedMilliseconds);
+            return Ok(cachedResult);
+        }
 
         try
         {
@@ -147,7 +161,7 @@ public class FeaturesController : ControllerBase
             _logger.LogInformation("Retrieved {Count} features from layer {LayerId} in {ElapsedMs}ms (Total: {Total}, Page: {Page})",
                 features.Count, layerId, stopwatch.ElapsedMilliseconds, totalCount, page);
 
-            return Ok(new
+            var result = new
             {
                 type = "FeatureCollection",
                 features = JsonSerializer.Deserialize<JsonElement>(geoJson).GetProperty("features"),
@@ -156,7 +170,16 @@ public class FeaturesController : ControllerBase
                 pageSize,
                 totalPages = (int)Math.Ceiling((double)totalCount / pageSize),
                 queryTimeMs = stopwatch.ElapsedMilliseconds
-            });
+            };
+
+            // Cache the result for 5 minutes
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5))
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+            _cache.Set(cacheKey, result, cacheOptions);
+
+            return Ok(result);
         }
         catch (Exception ex)
         {
