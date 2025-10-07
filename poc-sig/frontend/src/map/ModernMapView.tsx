@@ -5,6 +5,8 @@ import {
   GeoJSON,
   Rectangle,
   useMapEvents,
+  Marker,
+  Popup,
 } from "react-leaflet";
 import { LatLngBounds, LatLng } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -42,7 +44,9 @@ import {
   clusterApi,
 } from "../api/client";
 import { SelectionPanel } from "../components/SelectionPanel";
+import { SearchAutocomplete } from "../components/SearchAutocomplete";
 import type { Layer, Feature, FilterParams, Stats } from "../types/api";
+import type { SearchResult } from "../types/search";
 
 export const ModernMapView: React.FC = () => {
   const [layers, setLayers] = useState<Layer[]>([]);
@@ -60,6 +64,8 @@ export const ModernMapView: React.FC = () => {
   const [showFilters, setShowFilters] = useState(true);
   const [selectedFeatures, setSelectedFeatures] = useState<Feature[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [searchMarker, setSearchMarker] = useState<{ position: [number, number]; label: string } | null>(null);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
     loadLayers();
@@ -675,6 +681,38 @@ export const ModernMapView: React.FC = () => {
     return null;
   };
 
+  const MapController = () => {
+    const map = useMapEvents({});
+    React.useEffect(() => {
+      mapRef.current = map;
+    }, [map]);
+    return null;
+  };
+
+  const handleSearchSelect = (result: SearchResult) => {
+    if (result.latitude && result.longitude) {
+      // Zoom sur la position sélectionnée
+      const map = mapRef.current;
+      if (map) {
+        map.setView([result.latitude, result.longitude], 13, {
+          animate: true,
+          duration: 1
+        });
+      }
+
+      // Définir le marqueur de recherche
+      setSearchMarker({
+        position: [result.latitude, result.longitude],
+        label: result.label
+      });
+
+      // Supprimer le marqueur après 5 secondes
+      setTimeout(() => {
+        setSearchMarker(null);
+      }, 5000);
+    }
+  };
+
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("fr-FR");
   };
@@ -706,6 +744,11 @@ export const ModernMapView: React.FC = () => {
             <h1>POC SIG</h1>
           </div>
           <div className="subtitle">Système d'Information Géographique</div>
+        </div>
+
+        {/* Search Autocomplete */}
+        <div className="card fade-in" style={{ marginBottom: "1rem", position: "relative", zIndex: 9999, overflow: "visible" }}>
+          <SearchAutocomplete onSelect={handleSearchSelect} />
         </div>
 
         {/* Stats Grid */}
@@ -949,6 +992,16 @@ export const ModernMapView: React.FC = () => {
           />
 
           <BboxDrawer />
+          <MapController />
+
+          {/* Search Marker */}
+          {searchMarker && (
+            <Marker position={searchMarker.position}>
+              <Popup>
+                <strong>{searchMarker.label}</strong>
+              </Popup>
+            </Marker>
+          )}
 
           {/* Bbox Rectangle */}
           {bbox && (

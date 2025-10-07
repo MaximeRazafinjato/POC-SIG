@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { fixObjectEncoding } from '../utils/encoding';
+import type { SearchResult, SearchResultResponse } from '../types/search';
 
 interface Layer {
   id: number;
@@ -174,6 +175,25 @@ export const exportApi = {
       filename,
     };
   },
+};
+
+export const searchApi = {
+  autocomplete: async (query: string, maxResults = 10): Promise<SearchResult[]> => {
+    try {
+      const response = await api.get<SearchResultResponse>('/search/autocomplete', {
+        params: { q: query, maxResults }
+      });
+
+      if (response.data.isSuccess && response.data.value) {
+        return response.data.value;
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Search autocomplete error:', error);
+      return [];
+    }
+  }
 };
 
 export const downloadFile = (blob: Blob, filename: string): void => {
