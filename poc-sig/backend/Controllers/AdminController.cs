@@ -14,13 +14,20 @@ public class AdminController : ControllerBase
     private readonly ILogger<AdminController> _logger;
     private readonly ILoggerFactory _loggerFactory;
     private readonly HubEauService _hubEauService;
+    private readonly TerritorialDataSeeder _territorialDataSeeder;
 
-    public AdminController(AppDbContext context, ILogger<AdminController> logger, ILoggerFactory loggerFactory, HubEauService hubEauService)
+    public AdminController(
+        AppDbContext context,
+        ILogger<AdminController> logger,
+        ILoggerFactory loggerFactory,
+        HubEauService hubEauService,
+        TerritorialDataSeeder territorialDataSeeder)
     {
         _context = context;
         _logger = logger;
         _loggerFactory = loggerFactory;
         _hubEauService = hubEauService;
+        _territorialDataSeeder = territorialDataSeeder;
     }
 
     [HttpPost("clean-database")]
@@ -429,6 +436,106 @@ public class AdminController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating specialized layers from Hub'Eau data");
+        }
+    }
+
+    [HttpPost("load-territorial-data")]
+    public async Task<IActionResult> LoadTerritorialData()
+    {
+        try
+        {
+            _logger.LogInformation("Loading territorial data for Grand Est region...");
+
+            // Check if data already exists
+            var existingDepartements = await _context.Departements.CountAsync();
+            var existingCommunes = await _context.Communes.CountAsync();
+            var existingEPCIs = await _context.EPCIs.CountAsync();
+
+            if (existingDepartements > 0 || existingCommunes > 0 || existingEPCIs > 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Territorial data already exists. Use clean-territorial-data endpoint first if you want to reload.",
+                    existingData = new
+                    {
+                        departements = existingDepartements,
+                        communes = existingCommunes,
+                        epcis = existingEPCIs
+                    }
+                });
+            }
+
+            // Seed territorial data
+            var (departementsCount, communesCount, epcisCount) = await _territorialDataSeeder.SeedGrandEstTerritorialDataAsync();
+
+            return Ok(new
+            {
+                success = true,
+                message = "Territorial data loaded successfully for Grand Est region",
+                data = new
+                {
+                    departements = departementsCount,
+                    communes = communesCount,
+                    epcis = epcisCount
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading territorial data");
+            return StatusCode(500, new { error = "Failed to load territorial data", details = ex.Message });
+        }
+    }
+
+    [HttpPost("clean-territorial-data")]
+    public async Task<IActionResult> CleanTerritorialData()
+    {
+        try
+        {
+            _logger.LogWarning("Cleaning territorial data...");
+
+            var communesCount = await _context.Communes.CountAsync();
+            var epcisCount = await _context.EPCIs.CountAsync();
+            var departementsCount = await _context.Departements.CountAsync();
+
+            _context.Communes.RemoveRange(_context.Communes);
+            _context.EPCIs.RemoveRange(_context.EPCIs);
+            _context.Departements.RemoveRange(_context.Departements);
+
+            await _context.SaveChangesAsync();
+
+            // Reset identity columns
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Communes', RESEED, 0)");
+                await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('EPCIs', RESEED, 0)");
+                await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Departements', RESEED, 0)");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Could not reset identity columns for territorial data");
+            }
+
+            _logger.LogInformation("Territorial data cleaned successfully. Deleted {CommunesCount} communes, {EpcisCount} EPCI, {DepartementsCount} départements",
+                communesCount, epcisCount, departementsCount);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Territorial data cleaned successfully",
+                deleted = new
+                {
+                    communes = communesCount,
+                    epcis = epcisCount,
+                    departements = departementsCount
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error cleaning territorial data");
+            return StatusCode(500, new { error = "Failed to clean territorial data", details = ex.Message });
         }
     }
 }

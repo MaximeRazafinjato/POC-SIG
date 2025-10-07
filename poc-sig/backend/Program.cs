@@ -17,6 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddScoped<ImportGeoJsonCommand>();
+builder.Services.AddScoped<TerritorialDataSeeder>();
 
 // Add HttpClient for HubEau API calls
 builder.Services.AddHttpClient<HubEauService>(client =>
